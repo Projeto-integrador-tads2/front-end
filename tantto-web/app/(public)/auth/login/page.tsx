@@ -6,8 +6,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { EyeIcon, Lock, Mail } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Lock, Mail } from "lucide-react";
 import { LoginFormValues, loginSchema } from "@/validators/login-schema";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -39,36 +40,14 @@ export default function LoginPage() {
           className="w-full max-w-lg rounded-3xl bg-card px-14 py-10 flex flex-col items-center mx-auto "
           aria-label="Login Form Container"
         >
-          <div>
-            <div className="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-tr from-[#21c45d] via-[#ffd812] to-[#3483bd]">
-              <span className="sr-only">Logo Tantto</span>
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                <rect
-                  x="2"
-                  y="2"
-                  width="32"
-                  height="32"
-                  rx="8"
-                  fill="#21c45d"
-                />
-                <rect
-                  x="10"
-                  y="10"
-                  width="16"
-                  height="16"
-                  rx="4"
-                  fill="#ffd812"
-                />
-                <rect
-                  x="18"
-                  y="18"
-                  width="8"
-                  height="8"
-                  rx="2"
-                  fill="#3483bd"
-                />
-              </svg>
-            </div>
+          <div className="w-14 h-14 rounded-lg flex items-center justify-center mb-3">
+            <span className="sr-only">Logo Tantto</span>
+            <Image
+              src="/logo-tantto.png"
+              alt="Logo da empresa"
+              width={60}
+              height={60}
+            />
           </div>
           <h2 className="text-2xl font-semibold text-white mb-8 text-center">
             Bem-Vindo de Volta!
@@ -105,14 +84,20 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="************"
+                placeholder="Digite sua senha aqui.."
                 {...register("password")}
                 error={errors.password?.message}
                 aria-describedby={
                   errors.password ? "password-error" : undefined
                 }
                 startContent={<Lock className="w-5 h-5" />}
-                endContent={<EyeIcon className="w-5 h-5 " />}
+                endContent={
+                  showPassword ? (
+                    <EyeOffIcon className="w-5 h-5" />
+                  ) : (
+                    <EyeIcon className="w-5 h-5" />
+                  )
+                }
                 onEndContentClick={() => setShowPassword(!showPassword)}
               />
             </div>
