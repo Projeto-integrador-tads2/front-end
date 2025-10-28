@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "@/providers/QueryProvider";
+import { Providers } from "@/providers/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,13 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <QueryProvider>
-        <body
-          className={`${geistSans.variable} ${plusJakartaSans.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </QueryProvider>
+      <body
+        className={`${geistSans.variable} ${plusJakartaSans.variable} antialiased`}
+      >
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

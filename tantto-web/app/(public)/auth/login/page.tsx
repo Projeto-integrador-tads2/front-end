@@ -2,23 +2,25 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon, Lock, Mail } from "lucide-react";
-import { LoginFormValues, loginSchema } from "@/validators/login-schema";
+import { LoginData, loginSchema } from "@/validators/login-schema";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const { logIn } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<LoginFormValues>({
+  } = useForm<LoginData>({
     reValidateMode: "onChange",
     mode: "onTouched",
     defaultValues: {
@@ -28,7 +30,8 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
+  const onSubmit = (data: LoginData) => {
+    logIn(data);
     // TODO: Implementar autenticação
     console.log(data);
   };
