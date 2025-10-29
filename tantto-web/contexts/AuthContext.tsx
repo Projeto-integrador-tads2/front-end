@@ -25,7 +25,8 @@ export function AuthProvider({ children }: Props) {
       const res = await signIn("credentials", {
         email: data.email,
         password: data.password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: "/empresas",
       });
 
       if (res?.error) {
