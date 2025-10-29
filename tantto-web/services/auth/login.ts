@@ -1,7 +1,11 @@
 import api from "../api";
 
 import { LoginData } from "@/validators/login-schema";
+import { LoginResponse } from "@/types/auth";
+import { AxiosResponse } from "axios";
 
-export async function Login(data: LoginData): Promise<any> {
-  return await api.post(`api/Auth/login`, data);
+export async function Login(
+  data: LoginData
+): Promise<AxiosResponse<LoginResponse>> {
+  return await api.post<LoginResponse>(`api/Auth/login`, data);
 }

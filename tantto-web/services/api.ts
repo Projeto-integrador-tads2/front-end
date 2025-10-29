@@ -15,13 +15,13 @@ api.interceptors.request.use(async (request) => {
     const session = await getServerSession(nextAuthOptions);
 
     if (session) {
-      // request.headers.Authorization = `Bearer ${session.access_token}`;
+      request.headers.Authorization = `Bearer ${session.token}`;
     }
   } else {
     const session = await getSession();
 
     if (session) {
-      // request.headers.Authorization = `Bearer ${session.access_token}`;
+      request.headers.Authorization = `Bearer ${session.token}`;
     }
   }
 

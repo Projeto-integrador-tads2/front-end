@@ -21,26 +21,32 @@ export function AuthProvider({ children }: Props) {
   const router = useRouter();
 
   async function logIn(data: LoginData) {
-    const res = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
+    try {
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
 
-    if (res?.error) {
-      console.log(res);
+      if (res?.error) {
+        console.error("Login error:", res.error);
+        // TODO: add toast
+        throw new Error(res.error);
+      }
+
+      if (res?.ok) {
+        // TODO: add toast - Login realizado com sucesso
+        router.replace("/usuarios");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
       // TODO: add toast
-
-      return;
-    } else {
-      // TODO: add toast
-
-      router.replace("/usuarios");
+      throw error;
     }
   }
 
   async function logOut() {
-    signOut();
+    await signOut({ callbackUrl: "/auth/login" });
   }
 
   const values = {
