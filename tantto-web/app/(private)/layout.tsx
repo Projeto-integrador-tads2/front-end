@@ -1,4 +1,3 @@
-import React from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import { getServerSession } from "next-auth";
 import nextAuthOptions from "@/config/auth";

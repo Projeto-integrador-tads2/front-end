@@ -47,7 +47,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="flex flex-col justify-between h-screen w-64 bg-[var(--color-sidebar)] border-r border-[var(--color-sidebar-border)]"
+      className="flex flex-col justify-between h-screen w-64 bg-sidebar sticky top-0 left-0 z-30"
       style={{ minWidth: "256px" }}
     >
       <div>
