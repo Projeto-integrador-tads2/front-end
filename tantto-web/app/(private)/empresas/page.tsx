@@ -1,47 +1,69 @@
 "use client";
 import { useState } from "react";
-import { KanbanProvider, KanbanBoard, KanbanCards, KanbanCard } from "@/components/kibo-ui/kanban";
+import { KanbanProvider, KanbanBoard, KanbanCards, KanbanCard } from "@/components/kanban/kanban";
 import { useKanbanData } from "@/components/kanban/useKanbanData";
 import { KanbanCardDialog } from "@/components/kanban/KanbanCardDialog";
 import { KanbanColumnDialog } from "@/components/kanban/KanbanColumnDialog";
 import { KanbanCardItem } from "@/components/kanban/KanbanCardItem";
 import { KanbanColumnHeader } from "@/components/kanban/KanbanColumnHeader";
 import { Button } from "@/components/ui/button";
+import { KanbanColumnValues } from "@/validators/kanban";
+import { AsyncBoundary } from "@/components/common/AsyncBoundary";
 
 export default function EmpresasKanbanPage() {
-  const { columns, cards, addCard, addColumn } = useKanbanData();
+  const { columns, addCard, addColumn, isLoadingColumns, isFetchingColumns, isErrorColumns } = useKanbanData();
+  const cards = columns.flatMap(column => column.cards || []);
   const [openCardDialog, setOpenCardDialog] = useState<string | null>(null);
   const [openColumnDialog, setOpenColumnDialog] = useState(false);
+
+  const handleaddColumn = async (data: KanbanColumnValues) => {
+    const order = columns.length + 1;
+    await addColumn.mutateAsync({
+      ...data,
+      order,
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background px-0 py-0">
       <div>
-        <div className="bg-sidebar flex items-center justify-between mb-3 px-8 py-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white mb-1">Kanban Tantto</h1>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="text-[#A3A6B1]">Por Status:</span>
-              <Button size="sm" className="bg-[#23262F] text-white rounded-full px-4 py-1 h-7 text-xs font-semibold border border-[#3B82F6] flex items-center gap-2">
-                Todas Tasks
-                <span className="ml-2 bg-[#22C55E] text-white rounded-full px-2 py-0.5 text-xs font-bold">12</span>
-              </Button>
+        {/* Fixed header pinned to the right of the sidebar */}
+        <div className="fixed top-0 left-64 z-40 w-[calc(100%-16rem)]">
+          <div className="bg-sidebar flex items-center justify-between px-8 py-6">
+            <div>
+              <h1 className="text-2xl font-bold text-white mb-1">Kanban Tantto</h1>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="text-[#A3A6B1]">Por Status:</span>
+                <Button size="sm" className="bg-[#23262F] text-white rounded-full px-4 py-1 h-7 text-xs font-semibold border border-[#3B82F6] flex items-center gap-2">
+                  Todas Tasks
+                  <span className="ml-2 bg-[#22C55E] text-white rounded-full px-2 py-0.5 text-xs font-bold">12</span>
+                </Button>
+              </div>
             </div>
+            <Button
+              className="bg-primary text-white font-bold rounded-full! px-7 py-2 text-[16px] hover:bg-[#16a34a] border-0"
+              onClick={() => setOpenColumnDialog(true)}
+            >
+              Adicionar Coluna
+            </Button>
           </div>
-          <Button
-            className="bg-primary text-white font-bold rounded-full! px-7 py-2 text-[16px] hover:bg-[#16a34a] border-0"
-            onClick={() => setOpenColumnDialog(true)}
-          >
-            Adicionar Coluna
-          </Button>
         </div>
+  <div className="h-24" />
         <div className="px-4 py-6">
           <div className="w-full overflow-x-auto">
-            <KanbanProvider columns={columns} data={cards}>
-              {(column) => (
-                <KanbanBoard key={column.id} id={column.id} className="min-w-[340px] max-w-sm">
-                  <KanbanColumnHeader
-                    column={column}
-                    onAddCard={() => setOpenCardDialog(column.id)}
+            <AsyncBoundary
+            isFetching={isFetchingColumns}
+            isLoading={isLoadingColumns}
+            isError={isErrorColumns}
+            data={columns}
+            >
+            {(data) => (
+              <KanbanProvider columns={data} data={cards}>
+                {(column) => (
+                  <KanbanBoard key={column.id} id={column.id} className="min-w-[340px] max-w-sm">
+                    <KanbanColumnHeader
+                      column={column}
+                      onAddCard={() => setOpenCardDialog(column.id)}
                   />
                   <KanbanCards id={column.id} className="min-h-[120px]">
                     {(item) => (
@@ -53,6 +75,8 @@ export default function EmpresasKanbanPage() {
                 </KanbanBoard>
               )}
             </KanbanProvider>
+            )}
+            </AsyncBoundary>
           </div>
         </div>
       </div>
@@ -62,11 +86,10 @@ export default function EmpresasKanbanPage() {
         onOpenChange={(open) => setOpenCardDialog(open ? openCardDialog : null)}
         onSubmit={(data) => {
           addCard.mutate({
-            ...data,
-            name: data.title,
-            column: data.columnId,
-            avatars: ["/avatars/1.png"],
-            description: data.description || "",
+            // ...data,
+            // name: data.title,
+            companyId: "69004a9f-96c8-4762-be3a-d03720d0152e",
+            stepColumnId: data.stepColumnId,
           });
         }}
         columnId={openCardDialog || ""}
@@ -74,9 +97,7 @@ export default function EmpresasKanbanPage() {
       <KanbanColumnDialog
         open={openColumnDialog}
         onOpenChange={setOpenColumnDialog}
-        onSubmit={(data) => {
-          addColumn.mutate(data);
-        }}
+        onSubmit={handleaddColumn}
       />
     </div>
   );

@@ -4,28 +4,33 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { kanbanCardSchema } from "@/validators/kanban";
+import { kanbanCardSchema, KanbanCardValues } from "@/validators/kanban";
 import { z } from "zod";
 import { useEffect } from "react";
 
 export type KanbanCardDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: z.infer<typeof kanbanCardSchema>) => void;
+  // Dialog will provide card values except `companyId` (page supplies it)
+  onSubmit: (data: Omit<KanbanCardValues, "companyId">) => void;
   columnId: string;
 };
 
 export function KanbanCardDialog({ open, onOpenChange, onSubmit, columnId }: KanbanCardDialogProps) {
-  const form = useForm<z.infer<typeof kanbanCardSchema>>({
-    resolver: zodResolver(kanbanCardSchema),
-    defaultValues: { title: "", description: "", priority: "Alta Prioridade", columnId },
+  // The dialog doesn't collect `companyId` (it's provided by the page),
+  // so validate a version of the schema without `companyId`.
+  const dialogSchema = kanbanCardSchema.omit({ companyId: true });
+
+  const form = useForm<z.infer<typeof dialogSchema>>({
+    resolver: zodResolver(dialogSchema),
+    defaultValues: { title: "", description: "", priority: "Alta Prioridade", stepColumnId: columnId },
   });
 
   useEffect(() => {
     if (open) {
-      form.reset({ title: "", description: "", priority: "Alta Prioridade", columnId });
+      form.reset({ title: "", description: "", priority: "Alta Prioridade", stepColumnId: columnId });
     }
-  }, [open, columnId]);
+  }, [open, columnId, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -38,6 +43,8 @@ export function KanbanCardDialog({ open, onOpenChange, onSubmit, columnId }: Kan
           className="flex flex-col gap-0"
           style={{ fontFamily: 'var(--font-jakarta-sans, sans-serif)' }}
         >
+          {/* include hidden registered field so stepColumnId is present in form data */}
+          <input type="hidden" {...form.register("stepColumnId")} />
           <DialogHeader className="px-8 pt-7 pb-2">
             <DialogTitle className="text-[18px] font-bold text-white">Adicionar Card</DialogTitle>
           </DialogHeader>

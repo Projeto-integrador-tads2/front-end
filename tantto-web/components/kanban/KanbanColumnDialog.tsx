@@ -16,7 +16,7 @@ export type KanbanColumnDialogProps = {
 export function KanbanColumnDialog({ open, onOpenChange, onSubmit }: KanbanColumnDialogProps) {
   const form = useForm<z.infer<typeof kanbanColumnSchema>>({
     resolver: zodResolver(kanbanColumnSchema),
-    defaultValues: { name: "", color: "#3B82F6" },
+    defaultValues: { name: "", color: "#3B82F6",  },
   });
 
   useEffect(() => {

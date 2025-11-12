@@ -26,9 +26,8 @@ export function KanbanCardItem({ card }: { card: KanbanCard }) {
       <div className="text-[13px] text-[#A3A6B1] mb-2">
         {card.description}
       </div>
-      <div className="flex items-center gap-1 mt-auto">
-        {card.avatars.map((src, i) => (
-          <Avatar key={i} className="w-8 h-8 border-2 border-white -ml-2 first:ml-0 shadow-sm">
+      {/* <div className="flex items-center gap-1 mt-auto">
+        {card.avatars.map((src, i) => ( <Avatar key={i} className="w-8 h-8 border-2 border-white -ml-2 first:ml-0 shadow-sm">
             <AvatarImage src={src} />
             <AvatarFallback>+</AvatarFallback>
           </Avatar>
@@ -38,7 +37,7 @@ export function KanbanCardItem({ card }: { card: KanbanCard }) {
             +{card.avatars.length - 3}
           </span>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
