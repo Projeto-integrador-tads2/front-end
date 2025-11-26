@@ -40,12 +40,14 @@ type KanbanItemProps = {
   id: string;
   name: string;
   column: string;
-} & Record<string, unknown>;
+  [key: string]: unknown;
+};
 
 type KanbanColumnProps = {
   id: string;
   name: string;
-} & Record<string, unknown>;
+  [key: string]: unknown;
+};
 
 type KanbanContextProps<
   T extends KanbanItemProps = KanbanItemProps,
@@ -163,7 +165,7 @@ export const KanbanCards = ({
   className,
   ...props
 }: KanbanCardsProps<KanbanCardType>) => {
-  const { data } = useContext(KanbanContext) as KanbanContextProps<KanbanCardType, KanbanColumn>;
+  const { data } = useContext(KanbanContext) as unknown as KanbanContextProps<KanbanCardType, KanbanColumn>;
   const filteredData = data.filter((item) => getItemColumn(item) === props.id);
   const items = filteredData.map((item) => item.id);
 
