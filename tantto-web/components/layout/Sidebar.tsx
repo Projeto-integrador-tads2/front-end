@@ -7,7 +7,7 @@ import { Users, Building2, FileText, LogOut, Network } from "lucide-react";
 
 const menuOptions = [
   {
-    label: "Prospeção",
+    label: "Prospecção",
     icon: <Network size={20} />,
     href: "/prospection",
     active: true, // TODO: trocar por lógica de rota ativa

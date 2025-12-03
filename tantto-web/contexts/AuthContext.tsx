@@ -26,7 +26,7 @@ export function AuthProvider({ children }: Props) {
         email: data.email,
         password: data.password,
         redirect: true,
-        callbackUrl: "/empresas",
+        callbackUrl: "/prospeccao",
       });
 
       if (res?.error) {
