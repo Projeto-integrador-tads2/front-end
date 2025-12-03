@@ -7,5 +7,5 @@ import { AxiosResponse } from "axios";
 export async function Login(
   data: LoginData
 ): Promise<AxiosResponse<LoginResponse>> {
-  return await api.post<LoginResponse>(`api/Auth/login`, data);
+  return await api.post<LoginResponse>(`Auth/login`, data);
 }
