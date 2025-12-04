@@ -2,34 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Users, Building2, FileText, LogOut, Network } from "lucide-react";
 
 const menuOptions = [
-  {
-    label: "Prospecção",
-    icon: <Network size={20} />,
-    href: "/prospection",
-    active: true, // TODO: trocar por lógica de rota ativa
-  },
-  {
-    label: "Empresas",
-    icon: <Building2 size={20} />,
-    href: "/companies",
-    active: false,
-  },
-  {
-    label: "Clientes",
-    icon: <Users size={20} />,
-    href: "/clients",
-    active: false,
-  },
-  {
-    label: "Serviços",
-    icon: <FileText size={20} />,
-    href: "/services",
-    active: false,
-  },
+  { label: "Prospecção", icon: <Network size={20} />, href: "/prospeccao" },
+  { label: "Empresas", icon: <Building2 size={20} />, href: "/empresas" },
+  { label: "Clientes", icon: <Users size={20} />, href: "/clientes" },
+  { label: "Serviços", icon: <FileText size={20} />, href: "/servicos" },
 ];
 
 function getInitials(name?: string) {
@@ -41,6 +22,7 @@ function getInitials(name?: string) {
 
 export default function Sidebar() {
   const { data: session } = useSession();
+  const pathname = usePathname() || "/";
 
   const userName = session?.user?.name ?? "Usuário";
   const userRole = session?.user?.role ?? "Colaborador";
@@ -65,32 +47,33 @@ export default function Sidebar() {
         </div>
         {/* Menu */}
         <nav className="flex flex-col gap-2 mt-4 px-6">
-          {menuOptions.map((option) => (
-            <Link key={option.label} href={option.href} passHref>
-              <div
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors
-                  ${
-                    option.active
-                      ? "bg-[var(--color-card)] text-[var(--color-sidebar-foreground)]"
-                      : "text-[var(--color-sidebar-foreground)] hover:bg-[var(--color-card)]"
-                  }
-                `}
-              >
-                <span
-                  className={`flex items-center ${
-                    option.active
-                      ? "text-[var(--color-sidebar-foreground)]"
-                      : "text-[var(--color-sidebar-foreground)]"
-                  }`}
+          {menuOptions.map((option) => {
+            const isActive =
+              pathname === option.href ||
+              pathname.startsWith(option.href + "/");
+            return (
+              <Link key={option.label} href={option.href} passHref>
+                <div
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors
+                    ${
+                      isActive
+                        ? "bg-[var(--color-card)] text-[var(--color-sidebar-foreground)]"
+                        : "text-[var(--color-sidebar-foreground)] hover:bg-[var(--color-card)]"
+                    }
+                  `}
                 >
-                  {option.icon}
-                </span>
-                <span className="font-medium text-base font-jakarta-sans">
-                  {option.label}
-                </span>
-              </div>
-            </Link>
-          ))}
+                  <span
+                    className={`flex items-center text-[var(--color-sidebar-foreground)]`}
+                  >
+                    {option.icon}
+                  </span>
+                  <span className="font-medium text-base font-jakarta-sans">
+                    {option.label}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </nav>
       </div>
 
