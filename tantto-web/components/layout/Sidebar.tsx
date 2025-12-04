@@ -41,7 +41,7 @@ export default function Sidebar() {
             height={50}
             draggable={false}
           />
-          <span className="text-2xl font-bold text-[var(--color-sidebar-foreground)] font-jakarta-sans tracking-wide">
+          <span className="text-2xl font-bold text-(--color-sidebar-foreground) font-jakarta-sans tracking-wide">
             TANTTO
           </span>
         </div>
@@ -57,13 +57,13 @@ export default function Sidebar() {
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors
                     ${
                       isActive
-                        ? "bg-[var(--color-card)] text-[var(--color-sidebar-foreground)]"
-                        : "text-[var(--color-sidebar-foreground)] hover:bg-[var(--color-card)]"
+                        ? "bg-(--color-card) text-(--color-sidebar-foreground)"
+                        : "text-(--color-sidebar-foreground) hover:bg-(--color-card)"
                     }
                   `}
                 >
                   <span
-                    className={`flex items-center text-[var(--color-sidebar-foreground)]`}
+                    className={`flex items-center text-(--color-sidebar-foreground)`}
                   >
                     {option.icon}
                   </span>
@@ -79,31 +79,31 @@ export default function Sidebar() {
 
       {/* Rodapé: Usuário + Logout */}
       <div className="px-6 pb-6">
-        <div className="flex items-center justify-between bg-[var(--color-card)] rounded-xl px-3 py-2">
+        <div className="flex items-center justify-between bg-(--color-card rounded-xl px-3 py-2">
           <div className="flex items-center gap-3">
             {/* Avatar */}
-            <div className="w-9 h-9 rounded-full bg-[var(--color-sidebar-border)] flex items-center justify-center text-[var(--color-sidebar-foreground)] font-bold text-lg select-none">
+            <div className="w-9 h-9 rounded-full bg-(--color-sidebar-border) flex items-center justify-center text-(--color-sidebar-foreground) font-bold text-lg select-none">
               {getInitials(userName)}
             </div>
             {/* Nome e papel */}
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[var(--color-sidebar-foreground)] font-jakarta-sans leading-tight">
+              <span className="text-sm font-semibold text-(--color-sidebar-foreground) font-jakarta-sans leading-tight">
                 {userName}
               </span>
-              <span className="text-xs text-[var(--color-muted-foreground)] font-jakarta-sans leading-tight">
+              <span className="text-xs text-(--color-muted-foreground) font-jakarta-sans leading-tight">
                 {userRole}
               </span>
             </div>
           </div>
-          {/* Botão logout */}
+          
           <button
             title="Sair"
             onClick={() => signOut()}
-            className="p-2 rounded-lg hover:bg-[var(--color-sidebar-border)] transition-colors"
+            className="p-2 rounded hover:bg-(--color-sidebar-border) transition-colors cursor-pointer"
           >
             <LogOut
               size={18}
-              className="text-[var(--color-muted-foreground)]"
+              className="text-(--color-muted-foreground)"
             />
           </button>
         </div>

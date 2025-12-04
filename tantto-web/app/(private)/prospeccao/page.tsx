@@ -9,13 +9,22 @@ import {
   type DragEndEvent,
 } from "@/components/kanban/kanban";
 import { useKanbanData } from "@/components/kanban/useKanbanData";
-import { KanbanCardDialog, type CardFormValues } from "@/components/kanban/KanbanCardDialog";
-import { KanbanColumnDialog, type ColumnFormValues } from "@/components/kanban/KanbanColumnDialog";
+import {
+  KanbanCardDialog,
+  type CardFormValues,
+} from "@/components/kanban/KanbanCardDialog";
+import {
+  KanbanColumnDialog,
+  type ColumnFormValues,
+} from "@/components/kanban/KanbanColumnDialog";
 import { KanbanCardItem } from "@/components/kanban/KanbanCardItem";
 import { KanbanColumnHeader } from "@/components/kanban/KanbanColumnHeader";
 import { Button } from "@/components/ui/button";
 import { AsyncBoundary } from "@/components/common/AsyncBoundary";
-import type { KanbanCard as KanbanCardType, KanbanColumn } from "@/types/kanban";
+import type {
+  KanbanCard as KanbanCardType,
+  KanbanColumn,
+} from "@/types/kanban";
 
 /**
  * Dialog state for managing card creation/editing.
@@ -232,22 +241,28 @@ export default function EmpresasKanbanPage() {
         <div className="fixed top-0 left-64 z-40 w-[calc(100%-16rem)]">
           <div className="bg-sidebar flex items-center justify-between px-8 py-6">
             <div>
-              <h1 className="text-2xl font-bold text-white mb-1">Kanban Tantto</h1>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="text-[#A3A6B1]">Por Status:</span>
-                <Button
-                  size="sm"
-                  className="bg-[#23262F] text-white rounded-full px-4 py-1 h-7 text-xs font-semibold border border-[#3B82F6] flex items-center gap-2"
-                >
-                  Todas Tasks
-                  <span className="ml-2 bg-[#22C55E] text-white rounded-full px-2 py-0.5 text-xs font-bold">
-                    {totalCardsCount}
+              <h1 className="text-2xl font-bold text-white mb-1">
+                Kanban Tantto
+              </h1>
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-[#A3A6B1] font-medium">
+                    Por Status:
                   </span>
-                </Button>
+                  <span className="relative flex items-center">
+                    <span className="text-white font-semibold text-base">
+                      Todas Tasks
+                    </span>
+                    <span className="ml-2 bg-[#22C55E] text-white rounded-full px-2 py-0.5 text-xs font-bold shadow-sm border border-[#22C55E]">
+                      {totalCardsCount}
+                    </span>
+                  </span>
+                </div>
+                <div className="mt-1 ml-[90px] h-[3px] w-[60px] bg-[#22C55E] rounded-full" />
               </div>
             </div>
             <Button
-              className="bg-primary text-white font-bold rounded-full! px-7 py-2 text-[16px] hover:bg-[#16a34a] border-0"
+              className="bg-primary text-white font-bold px-7 py-2 text-[16px] rounded-full! hover:bg-[#16a34a] border-0"
               onClick={handleOpenAddColumn}
             >
               Adicionar Coluna
@@ -268,9 +283,11 @@ export default function EmpresasKanbanPage() {
               data={columns}
               emptyFallback={
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <p className="text-[#A3A6B1] mb-4">Nenhuma coluna encontrada.</p>
+                  <p className="text-[#A3A6B1] mb-4">
+                    Nenhuma coluna encontrada.
+                  </p>
                   <Button
-                    className="bg-primary text-white font-bold rounded-full px-6 py-2"
+                    className="bg-primary text-white font-bold rounded-full! px-6 py-2"
                     onClick={handleOpenAddColumn}
                   >
                     Criar primeira coluna
