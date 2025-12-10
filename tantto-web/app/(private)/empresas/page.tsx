@@ -1,16 +1,21 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, Trash2, X } from "lucide-react";
-import Image from "next/image";
+import { Search, Trash2, X, Pencil } from "lucide-react";
 import CompanyDialog from "@/components/company/CompanyDialog";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import type { CompanyFormValues } from "@/components/company/CompanyDialog";
+import { getAllCompanies } from "@/services/companies/get-all-companies";
+import { createCompany } from "@/services/companies/create-company";
+import { deleteCompany } from "@/services/companies/delete-company";
+import { updateCompany } from "@/services/companies/update-company";
+import { toDataUrl } from "@/lib/image";
 
 export type Company = CompanyFormValues & {
   id: string;
   avatar?: string; // data URL or image URL
+  companyId?: string; // backend ID
 };
 
 export default function EmpresaKanbanPage() {
@@ -21,11 +26,45 @@ export default function EmpresaKanbanPage() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [deleteCandidate, setDeleteCandidate] = useState<Company | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [editCandidate, setEditCandidate] = useState<Company | null>(null);
 
-  const handleOpenAddCompany = useCallback(
-    () => setCompanyDialogOpen(true),
-    []
-  );
+  // Carregar empresas do backend ao montar o componente
+  useEffect(() => {
+    const loadCompanies = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getAllCompanies();
+        // Mapear dados do backend para o tipo local Company
+        const mappedCompanies: Company[] = data.map((company) => ({
+          legalName: company.name,
+          representative: "", // backend não retorna esse campo, manter vazio
+          cnpj: company.cnpj,
+          createdAt: "", // backend não retorna data de criação
+          id: company.companyId || company.name, // usar companyId do backend
+          companyId: company.companyId,
+          avatar:
+            company.companyPicture && company.companyPicture !== "null"
+              ? company.companyPicture
+              : undefined,
+        }));
+        setCompanies(mappedCompanies);
+      } catch (err) {
+        console.error("Erro ao carregar empresas:", err);
+        setError("Falha ao carregar empresas. Tente novamente.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCompanies();
+  }, []);
+
+  const handleOpenAddCompany = useCallback(() => {
+    setEditCandidate(null);
+    setCompanyDialogOpen(true);
+  }, []);
 
   const handleCompanyDialogOpenChange = useCallback(
     (open: boolean) => setCompanyDialogOpen(open),
@@ -34,39 +73,101 @@ export default function EmpresaKanbanPage() {
 
   const handleSubmitCompany = useCallback(
     async (data: CompanyFormValues, files: File[]) => {
-      let avatarUrl: string | undefined = undefined;
+      try {
+        let pictureBase64: string | undefined = undefined;
 
-      if (files && files.length > 0) {
-        const file = files[0];
-        // read as data URL
-        avatarUrl = await new Promise<string | undefined>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () =>
-            resolve(
-              typeof reader.result === "string" ? reader.result : undefined
-            );
-          reader.onerror = () => resolve(undefined);
-          reader.readAsDataURL(file);
-        });
+        if (files && files.length > 0) {
+          const file = files[0];
+          // Converter arquivo para base64
+          pictureBase64 = await new Promise<string | undefined>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () =>
+              resolve(
+                typeof reader.result === "string" ? reader.result : undefined
+              );
+            reader.onerror = () => resolve(undefined);
+            reader.readAsDataURL(file);
+          });
+        }
+
+        if (editCandidate && editCandidate.companyId) {
+          // Update existing company
+          const payload = {
+            name: data.legalName,
+            cnpj: data.cnpj.replace(/\D/g, ""),
+            ...(pictureBase64 ? { companyPicture: pictureBase64 } : {}),
+          };
+
+          const response = await updateCompany(
+            editCandidate.companyId,
+            payload
+          );
+
+          // Update local state using submitted values
+          setCompanies((prev) =>
+            prev.map((c) =>
+              c.companyId === response.companyId
+                ? {
+                    ...c,
+                    legalName: data.legalName,
+                    representative: data.representative,
+                    cnpj: data.cnpj,
+                    createdAt: data.createdAt,
+                    avatar: pictureBase64 ?? c.avatar,
+                  }
+                : c
+            )
+          );
+          setEditCandidate(null);
+          console.log("Empresa atualizada:", response);
+        } else {
+          // Create new company
+          const response = await createCompany({
+            name: data.legalName,
+            cnpj: data.cnpj.replace(/\D/g, ""), // remover formatação
+            companyPicture: pictureBase64 || undefined,
+          });
+
+          // Adicionar empresa retornada do backend à lista local
+          const newCompany: Company = {
+            legalName: response.name,
+            representative: data.representative, // manter do formulário
+            cnpj: response.cnpj,
+            // Se o usuário forneceu uma data no formulário, use-a. Caso contrário,
+            // preencha com a data atual (isso evita que o modal mostre "N/A" após criação).
+            createdAt: data.createdAt || new Date().toISOString(),
+            id: response.companyId,
+            companyId: response.companyId,
+            avatar: pictureBase64 ?? toDataUrl(response.companyPicture),
+          };
+
+          setCompanies((prev) => [newCompany, ...prev]);
+          console.log("Empresa criada com sucesso:", response);
+        }
+      } catch (err) {
+        console.error("Erro ao criar/atualizar empresa:", err);
+        alert("Falha ao criar/atualizar empresa. Tente novamente.");
       }
-
-      // Create new company with ID and optional avatar
-      const newCompany: Company = {
-        ...data,
-        id: Date.now().toString(), // Simple ID generation
-        avatar: avatarUrl,
-      };
-
-      setCompanies((prev) => [newCompany, ...prev]);
-      console.log("Creating company:", newCompany, files);
     },
-    []
+    [editCandidate]
   );
 
   const handleDeleteCompany = useCallback((id: string) => {
-    setCompanies((prev) => prev.filter((company) => company.id !== id));
-    // clear selection if it was the one deleted
-    setSelectedCompany((prev) => (prev && prev.id === id ? null : prev));
+    const deleteAsync = async () => {
+      try {
+        // Excluir do backend
+        await deleteCompany(id);
+        // Remover da lista local
+        setCompanies((prev) => prev.filter((company) => company.id !== id));
+        // Limpar seleção se era a empresa deletada
+        setSelectedCompany((prev) => (prev && prev.id === id ? null : prev));
+        console.log("Empresa excluída com sucesso");
+      } catch (err) {
+        console.error("Erro ao excluir empresa:", err);
+        alert("Falha ao excluir empresa. Tente novamente.");
+      }
+    };
+    deleteAsync();
   }, []);
 
   const handleOpenCompanyDetails = useCallback((company: Company) => {
@@ -109,7 +210,21 @@ export default function EmpresaKanbanPage() {
       </div>
 
       <div className="pt-24 px-8 pb-8">
-        {filteredCompanies.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-[#A3A6B1] mb-4">Carregando empresas...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-red-400 mb-4">{error}</p>
+            <Button
+              className="rounded-full! font-bold"
+              onClick={() => window.location.reload()}
+            >
+              Tentar Novamente
+            </Button>
+          </div>
+        ) : filteredCompanies.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <p className="text-[#A3A6B1] mb-4">
               {companies.length === 0
@@ -135,7 +250,7 @@ export default function EmpresaKanbanPage() {
               >
                 {/* Avatar */}
                 {company.avatar ? (
-                  <Image
+                  <img
                     src={company.avatar}
                     alt={`${company.legalName} avatar`}
                     width={48}
@@ -158,6 +273,17 @@ export default function EmpresaKanbanPage() {
 
                 {/* Actions */}
                 <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditCandidate(company);
+                      setCompanyDialogOpen(true);
+                    }}
+                    className="p-2 rounded-full bg-slate-700/10 hover:bg-slate-700/20 text-slate-300 transition-colors"
+                    title="Editar empresa"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -184,7 +310,7 @@ export default function EmpresaKanbanPage() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 {selectedCompany.avatar ? (
-                  <Image
+                  <img
                     src={selectedCompany.avatar}
                     alt={`${selectedCompany.legalName} avatar`}
                     width={48}
@@ -248,24 +374,51 @@ export default function EmpresaKanbanPage() {
             </div>
 
             {/* Botões de Ação */}
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setDetailsModalOpen(false)}
-                className="flex-1 px-4 py-2 rounded-2xl cursor-pointer bg-[#292C36] text-[#A3A6B1] hover:bg-[#363A46] transition-colors text-sm font-medium"
-              >
-                Fechar
-              </button>
+            <div className="flex gap-3 mt-6 flex-col">
               <button
                 onClick={() => {
-                  if (selectedCompany) {
-                    setDeleteCandidate(selectedCompany);
-                    setConfirmOpen(true);
-                  }
+                  // TODO: Navigate to negotiations page or open negotiations modal
+                  console.log(
+                    "Abrir negociações para:",
+                    selectedCompany?.legalName
+                  );
                 }}
-                className="flex-1 px-4 py-2 rounded-2xl cursor-pointer bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-sm font-medium"
+                className="w-full px-4 py-2 rounded-2xl cursor-pointer bg-[#1F6B3B] text-white hover:bg-[#15803d] transition-colors text-sm font-medium"
               >
-                Excluir
+                Negociações
               </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    if (selectedCompany) {
+                      // Open edit dialog pre-filled
+                      setEditCandidate(selectedCompany);
+                      setCompanyDialogOpen(true);
+                      setDetailsModalOpen(false);
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 rounded-2xl cursor-pointer bg-[#244e6a] text-white hover:bg-[#1f4660] transition-colors text-sm font-medium"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => setDetailsModalOpen(false)}
+                  className="flex-1 px-4 py-2 rounded-2xl cursor-pointer bg-[#292C36] text-[#A3A6B1] hover:bg-[#363A46] transition-colors text-sm font-medium"
+                >
+                  Fechar
+                </button>
+                <button
+                  onClick={() => {
+                    if (selectedCompany) {
+                      setDeleteCandidate(selectedCompany);
+                      setConfirmOpen(true);
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 rounded-2xl cursor-pointer bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-sm font-medium"
+                >
+                  Excluir
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -300,9 +453,11 @@ export default function EmpresaKanbanPage() {
       />
 
       <CompanyDialog
+        key={editCandidate ? `edit-${editCandidate.companyId}` : "add"}
         open={companyDialogOpen}
         onOpenChange={handleCompanyDialogOpenChange}
         onSubmit={handleSubmitCompany}
+        initialValues={editCandidate ?? undefined}
       />
     </div>
   );

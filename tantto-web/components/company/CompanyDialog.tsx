@@ -10,6 +10,17 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 
+// Format CNPJ: XX.XXX.XXX/XXXX-XX
+const formatCNPJ = (value: string): string => {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 14)
+    .replace(/(\d{2})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+};
+
 export type CompanyFormValues = {
   legalName: string;
   representative: string;
@@ -21,6 +32,8 @@ export type CompanyDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CompanyFormValues, files: File[]) => Promise<void> | void;
+  /** If provided, the form will be pre-filled with these values when opened */
+  initialValues?: CompanyFormValues | null;
   isSubmitting?: boolean;
 };
 
@@ -28,23 +41,59 @@ export default function CompanyDialog({
   open,
   onOpenChange,
   onSubmit,
+  initialValues = null,
   isSubmitting = false,
 }: CompanyDialogProps) {
-  const { register, handleSubmit, reset, watch } = useForm<CompanyFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<CompanyFormValues>({
     defaultValues: {
       legalName: "",
       representative: "",
       cnpj: "",
       createdAt: "",
     },
+    mode: "onBlur", // Validate on blur for better UX
   });
 
   const legalNameValue = watch("legalName");
+  const cnpjValue = watch("cnpj");
   const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
-    if (!open) reset();
-  }, [open, reset]);
+    if (cnpjValue) {
+      const formatted = formatCNPJ(cnpjValue);
+      if (formatted !== cnpjValue) {
+        setValue("cnpj", formatted);
+      }
+    }
+  }, [cnpjValue, setValue]);
+
+  useEffect(() => {
+    if (!open) {
+      // When dialog closes, clear form and files so next open starts clean
+      reset();
+      setFiles([]);
+      return;
+    }
+
+    // On open: if initialValues are provided, pre-fill; otherwise ensure the
+    // form is reset to default empty values (so "Adicionar Empresa" opens empty).
+    if (open) {
+      if (initialValues) {
+        reset(initialValues);
+      } else {
+        reset();
+      }
+      // clear any previously selected files when opening
+      setFiles([]);
+    }
+  }, [open, reset, initialValues]);
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -87,10 +136,23 @@ export default function CompanyDialog({
                     Razão Social
                   </label>
                   <Input
-                    {...register("legalName")}
+                    {...register("legalName", {
+                      required: "Razão Social é obrigatória",
+                      minLength: {
+                        value: 3,
+                        message: "Mínimo 3 caracteres",
+                      },
+                    })}
                     placeholder="Digite aqui.."
-                    className="mt-1 bg-[#242d32]! text-white border-0"
+                    className={`mt-1 bg-[#242d32]! text-white border-0 ${
+                      errors.legalName ? "border-red-500! border!" : ""
+                    }`}
                   />
+                  {errors.legalName && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.legalName.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -98,19 +160,48 @@ export default function CompanyDialog({
                     Cliente Representante
                   </label>
                   <Input
-                    {...register("representative")}
+                    {...register("representative", {
+                      required: "Cliente Representante é obrigatório",
+                      minLength: {
+                        value: 3,
+                        message: "Mínimo 3 caracteres",
+                      },
+                    })}
                     placeholder="Digite o nome.."
-                    className="mt-1 bg-[#242d32]! text-white border-0"
+                    className={`mt-1 bg-[#242d32]! text-white border-0 ${
+                      errors.representative ? "border-red-500! border!" : ""
+                    }`}
                   />
+                  {errors.representative && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.representative.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
                   <label className="text-xs text-white font-medium">CNPJ</label>
                   <Input
-                    {...register("cnpj")}
-                    placeholder="XXX.XXX.XX/0001-XX"
-                    className="mt-1 bg-[#242d32]! text-white border-0"
+                    {...register("cnpj", {
+                      required: "CNPJ é obrigatório",
+                      validate: (value) => {
+                        const cleaned = value.replace(/\D/g, "");
+                        if (cleaned.length !== 14) {
+                          return "CNPJ deve ter 14 dígitos";
+                        }
+                        return true;
+                      },
+                    })}
+                    placeholder="XX.XXX.XXX/XXXX-XX"
+                    className={`mt-1 bg-[#242d32]! text-white border-0 ${
+                      errors.cnpj ? "border-red-500! border!" : ""
+                    }`}
                   />
+                  {errors.cnpj && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.cnpj.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -119,9 +210,18 @@ export default function CompanyDialog({
                   </label>
                   <Input
                     type="date"
-                    {...register("createdAt")}
-                    className="mt-1 bg-[#242d32]! text-white border-0"
+                    {...register("createdAt", {
+                      required: "Data de Criação é obrigatória",
+                    })}
+                    className={`mt-1 bg-[#242d32]! text-white border-0 ${
+                      errors.createdAt ? "border-red-500! border!" : ""
+                    }`}
                   />
+                  {errors.createdAt && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.createdAt.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -167,16 +267,8 @@ export default function CompanyDialog({
                   </div>
                 )}
               </div>
-              <DialogFooter className="flex flex-row gap-3 px-6 pb-6 pt-4 items-center">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="px-4 py-2 rounded-full bg-[#242d32] text-white hover:bg-[#2a3238]"
-                >
-                  Negociações
-                </Button>
-
-                <div className="flex gap-3 flex-1 justify-end">
+              <DialogFooter className="flex flex-row gap-3 px-6 pb-6 pt-4 items-center justify-end">
+                <div className="flex gap-3">
                   <Button
                     type="button"
                     variant="ghost"
