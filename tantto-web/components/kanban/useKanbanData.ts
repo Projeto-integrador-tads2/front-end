@@ -22,6 +22,11 @@ import type {
   KanbanPriority,
 } from "@/types/kanban";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  handleMutationSuccess,
+  handleMutationError,
+  toastError,
+} from "@/lib/toast-utils";
 
 // Re-export types for backward compatibility
 export type { KanbanPriority } from "@/types/kanban";
@@ -137,10 +142,12 @@ export function useKanbanData() {
     mutationFn: async (input: CreateCardInput) => {
       return createCard(input);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      handleMutationSuccess(data, "Card criado com sucesso!", "create-card");
       queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
     },
     onError: (error) => {
+      handleMutationError(error, "Erro ao criar card. Tente novamente.", "create-card");
       console.error("Failed to create card:", error);
     },
   });
@@ -152,10 +159,12 @@ export function useKanbanData() {
     mutationFn: async (input: UpdateCardInput) => {
       return updateCard(input);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      handleMutationSuccess(data, "Card atualizado com sucesso!", "update-card");
       queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
     },
     onError: (error) => {
+      handleMutationError(error, "Erro ao atualizar card. Tente novamente.", "update-card");
       console.error("Failed to update card:", error);
     },
   });
@@ -224,6 +233,7 @@ export function useKanbanData() {
       if (context?.previousColumns) {
         queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, context.previousColumns);
       }
+      toastError("Erro ao mover card. Tente novamente.", "move-card");
     },
     onSettled: () => {
       // Refetch to ensure consistency
@@ -259,6 +269,7 @@ export function useKanbanData() {
       if (context?.previousColumns) {
         queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, context.previousColumns);
       }
+      toastError("Erro ao excluir card. Tente novamente.", "delete-card");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
@@ -276,10 +287,12 @@ export function useKanbanData() {
     mutationFn: async (input: CreateColumnInput) => {
       return createColumn(input);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      handleMutationSuccess(data, "Coluna criada com sucesso!", "create-column");
       queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
     },
     onError: (error) => {
+      handleMutationError(error, "Erro ao criar coluna. Tente novamente.", "create-column");
       console.error("Failed to create column:", error);
     },
   });
@@ -291,10 +304,12 @@ export function useKanbanData() {
     mutationFn: async (input: UpdateColumnInput) => {
       return updateColumn(input);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      handleMutationSuccess(data, "Coluna atualizada com sucesso!", "update-column");
       queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
     },
     onError: (error) => {
+      handleMutationError(error, "Erro ao atualizar coluna. Tente novamente.", "update-column");
       console.error("Failed to update column:", error);
     },
   });
@@ -325,6 +340,7 @@ export function useKanbanData() {
       if (context?.previousColumns) {
         queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, context.previousColumns);
       }
+      toastError("Erro ao excluir coluna. Tente novamente.", "delete-column");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });

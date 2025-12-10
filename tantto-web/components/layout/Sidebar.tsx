@@ -22,7 +22,9 @@ function getInitials(name?: string) {
 
 export default function Sidebar() {
   const { data: session } = useSession();
+
   const pathname = usePathname() || "/";
+
 
   const userName = session?.user?.name ?? "Usuário";
   const userRole = session?.user?.role ?? "Colaborador";
@@ -41,6 +43,7 @@ export default function Sidebar() {
             height={50}
             draggable={false}
           />
+
           <span className="text-2xl font-bold text-(--color-sidebar-foreground) font-jakarta-sans tracking-wide">
             TANTTO
           </span>
@@ -48,15 +51,18 @@ export default function Sidebar() {
         {/* Menu */}
         <nav className="flex flex-col gap-2 mt-4 px-6">
           {menuOptions.map((option) => {
+
             const isActive =
               pathname === option.href ||
               pathname.startsWith(option.href + "/");
+
             return (
               <Link key={option.label} href={option.href} passHref>
                 <div
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors
                     ${
                       isActive
+
                         ? "bg-(--color-card) text-(--color-sidebar-foreground)"
                         : "text-(--color-sidebar-foreground) hover:bg-(--color-card)"
                     }
@@ -87,10 +93,12 @@ export default function Sidebar() {
             </div>
             {/* Nome e papel */}
             <div className="flex flex-col">
+
               <span className="text-sm font-semibold text-(--color-sidebar-foreground) font-jakarta-sans leading-tight">
                 {userName}
               </span>
               <span className="text-xs text-(--color-muted-foreground) font-jakarta-sans leading-tight">
+
                 {userRole}
               </span>
             </div>

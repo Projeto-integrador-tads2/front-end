@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ReactNode, createContext, useContext } from "react";
 
 import { LoginData } from "@/validators/login-schema";
+import { toastSuccess, toastError } from "@/lib/toast-utils";
 
 interface AuthContextData {
   logIn(arg: LoginData): Promise<void>;
@@ -31,17 +32,21 @@ export function AuthProvider({ children }: Props) {
 
       if (res?.error) {
         console.error("Login error:", res.error);
-        // TODO: add toast
+        toastError(
+          res.error === "CredentialsSignin"
+            ? "Credenciais inválidas. Verifique seu email e senha."
+            : "Não foi possível realizar o login. Tente novamente."
+        );
         throw new Error(res.error);
       }
 
       if (res?.ok) {
-        // TODO: add toast - Login realizado com sucesso
+        toastSuccess("Login realizado com sucesso!");
         router.replace("/usuarios");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      // TODO: add toast
+      toastError("Não foi possível realizar o login. Tente novamente.");
       throw error;
     }
   }
