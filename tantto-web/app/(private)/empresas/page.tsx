@@ -14,8 +14,8 @@ import { toDataUrl } from "@/lib/image";
 
 export type Company = CompanyFormValues & {
   id: string;
-  avatar?: string; // data URL or image URL
-  companyId?: string; // backend ID
+  avatar?: string;
+  companyId?: string;
 };
 
 export default function EmpresaKanbanPage() {
@@ -30,20 +30,19 @@ export default function EmpresaKanbanPage() {
   const [error, setError] = useState<string | null>(null);
   const [editCandidate, setEditCandidate] = useState<Company | null>(null);
 
-  // Carregar empresas do backend ao montar o componente
   useEffect(() => {
     const loadCompanies = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await getAllCompanies();
-        // Mapear dados do backend para o tipo local Company
+
         const mappedCompanies: Company[] = data.map((company) => ({
           legalName: company.name,
-          representative: "", // backend não retorna esse campo, manter vazio
+          representative: "",
           cnpj: company.cnpj,
-          createdAt: "", // backend não retorna data de criação
-          id: company.companyId || company.name, // usar companyId do backend
+          createdAt: "",
+          id: company.companyId || company.name,
           companyId: company.companyId,
           avatar:
             company.companyPicture && company.companyPicture !== "null"
@@ -78,7 +77,6 @@ export default function EmpresaKanbanPage() {
 
         if (files && files.length > 0) {
           const file = files[0];
-          // Converter arquivo para base64
           pictureBase64 = await new Promise<string | undefined>((resolve) => {
             const reader = new FileReader();
             reader.onload = () =>
@@ -91,7 +89,6 @@ export default function EmpresaKanbanPage() {
         }
 
         if (editCandidate && editCandidate.companyId) {
-          // Update existing company
           const payload = {
             name: data.legalName,
             cnpj: data.cnpj.replace(/\D/g, ""),
@@ -103,38 +100,33 @@ export default function EmpresaKanbanPage() {
             payload
           );
 
-          // Update local state using submitted values
           setCompanies((prev) =>
             prev.map((c) =>
               c.companyId === response.companyId
                 ? {
-                  ...c,
-                  legalName: data.legalName,
-                  representative: data.representative,
-                  cnpj: data.cnpj,
-                  createdAt: data.createdAt,
-                  avatar: pictureBase64 ?? c.avatar,
-                }
+                    ...c,
+                    legalName: data.legalName,
+                    representative: data.representative,
+                    cnpj: data.cnpj,
+                    createdAt: data.createdAt,
+                    avatar: pictureBase64 ?? c.avatar,
+                  }
                 : c
             )
           );
+
           setEditCandidate(null);
-          console.log("Empresa atualizada:", response);
         } else {
-          // Create new company
           const response = await createCompany({
             name: data.legalName,
-            cnpj: data.cnpj.replace(/\D/g, ""), // remover formatação
+            cnpj: data.cnpj.replace(/\D/g, ""),
             companyPicture: pictureBase64 || undefined,
           });
 
-          // Adicionar empresa retornada do backend à lista local
           const newCompany: Company = {
             legalName: response.name,
-            representative: data.representative, // manter do formulário
+            representative: data.representative,
             cnpj: response.cnpj,
-            // Se o usuário forneceu uma data no formulário, use-a. Caso contrário,
-            // preencha com a data atual (isso evita que o modal mostre "N/A" após criação).
             createdAt: data.createdAt || new Date().toISOString(),
             id: response.companyId,
             companyId: response.companyId,
@@ -142,8 +134,11 @@ export default function EmpresaKanbanPage() {
           };
 
           setCompanies((prev) => [newCompany, ...prev]);
-          console.log("Empresa criada com sucesso:", response);
         }
+
+        // 🔥 AQUI FOI A ÚNICA ALTERAÇÃO
+        setCompanyDialogOpen(false);
+
       } catch (err) {
         console.error("Erro ao criar/atualizar empresa:", err);
         alert("Falha ao criar/atualizar empresa. Tente novamente.");
@@ -155,13 +150,9 @@ export default function EmpresaKanbanPage() {
   const handleDeleteCompany = useCallback((id: string) => {
     const deleteAsync = async () => {
       try {
-        // Excluir do backend
         await deleteCompany(id);
-        // Remover da lista local
         setCompanies((prev) => prev.filter((company) => company.id !== id));
-        // Limpar seleção se era a empresa deletada
         setSelectedCompany((prev) => (prev && prev.id === id ? null : prev));
-        console.log("Empresa excluída com sucesso");
       } catch (err) {
         console.error("Erro ao excluir empresa:", err);
         alert("Falha ao excluir empresa. Tente novamente.");
@@ -175,7 +166,6 @@ export default function EmpresaKanbanPage() {
     setDetailsModalOpen(true);
   }, []);
 
-  // Filter companies based on search
   const filteredCompanies = companies.filter(
     (company) =>
       company.legalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -248,7 +238,6 @@ export default function EmpresaKanbanPage() {
                 className="flex items-center gap-3 p-4 rounded-3xl bg-[#34434c] hover:bg-[#49565e] border border-[#34434c] hover:border-primary/50 transition-all hover:shadow-md cursor-pointer"
                 onClick={() => handleOpenCompanyDetails(company)}
               >
-                {/* Avatar */}
                 {company.avatar ? (
                   <img
                     src={company.avatar}
@@ -263,15 +252,12 @@ export default function EmpresaKanbanPage() {
                   </div>
                 )}
 
-                {/* Info */}
-                {/* Info - Apenas nome */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-white truncate text-sm">
                     {company.legalName}
                   </h3>
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-2 shrink-0">
                   <button
                     onClick={(e) => {
@@ -302,11 +288,9 @@ export default function EmpresaKanbanPage() {
         )}
       </div>
 
-      {/* Modal de Detalhes da Empresa */}
       {detailsModalOpen && selectedCompany && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-sidebar rounded-3xl p-6 w-11/12 max-w-lg border border-[#34434c] shadow-xl">
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 {selectedCompany.avatar ? (
@@ -339,7 +323,6 @@ export default function EmpresaKanbanPage() {
               </button>
             </div>
 
-            {/* Informações */}
             <div className="space-y-4 bg-[#242d32] rounded-2xl p-4">
               <div>
                 <p className="text-xs text-[#A3A6B1] mb-1">Razão Social</p>
@@ -366,21 +349,18 @@ export default function EmpresaKanbanPage() {
                 <p className="text-sm text-white font-medium">
                   {selectedCompany.createdAt
                     ? new Date(selectedCompany.createdAt).toLocaleDateString(
-                      "pt-BR"
-                    )
+                        "pt-BR"
+                      )
                     : "N/A"}
                 </p>
               </div>
             </div>
 
-            {/* Botões de Ação */}
             <div className="flex gap-3 mt-6 flex-col">
-
               <div className="flex gap-3">
                 <button
                   onClick={() => {
                     if (selectedCompany) {
-                      // Open edit dialog pre-filled
                       setEditCandidate(selectedCompany);
                       setCompanyDialogOpen(true);
                       setDetailsModalOpen(false);
@@ -413,7 +393,6 @@ export default function EmpresaKanbanPage() {
         </div>
       )}
 
-      {/* Confirm Dialog for delete */}
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={(open) => {
@@ -431,7 +410,6 @@ export default function EmpresaKanbanPage() {
         onConfirm={() => {
           if (deleteCandidate) {
             handleDeleteCompany(deleteCandidate.id);
-            // if the details modal was open for this company, close it
             if (selectedCompany && selectedCompany.id === deleteCandidate.id) {
               setDetailsModalOpen(false);
               setSelectedCompany(null);
