@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useClientsData } from "@/components/clients/useClientsData";
@@ -112,6 +111,7 @@ export default function ClientesPage() {
     });
   }, []);
 
+
   // ============================================
   // RENDER
   // ============================================
@@ -119,27 +119,29 @@ export default function ClientesPage() {
   return (
     <div className="flex flex-col min-h-screen p-6">
       {/* Header */}
-      <header className="flex items-center justify-between mb-6">
-        {/* Search Input */}
-        <div className="flex-1 max-w-lg">
-          <Input
-            type="text"
-            placeholder="Pesquisar..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            startContent={<Search size={20} className="text-[#A3A6B1]" />}
-            className="bg-secondary border-0 h-12 rounded-2xl"
-          />
-        </div>
+      <div>
+        <div className="fixed top-0 left-64 z-40 w-[calc(100%-16rem)] bg-background">
+          <div className="flex items-center px-8 py-6 justify-between">
+            <div className="w-full max-w-240 relative">
+              <input
+                type="text"
+                placeholder="Pesquisar..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 rounded-2xl bg-sidebar focus:outline-none focus:ring-2 focus:ring-primary pl-10"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#475569]" />
+            </div>
 
-        {/* Add Client Button */}
-        <Button
-          onClick={handleOpenCreateDialog}
-          className="ml-4 bg-primary hover:bg-primary/90 h-12 px-6"
-        >
-          Adicionar Cliente
-        </Button>
-      </header>
+            <Button
+              className="bg-primary text-white font-bold px-7 py-2 text-[16px] rounded-full! hover:bg-[#16a34a] border-0"
+              onClick={handleOpenCreateDialog}
+            >
+              Adicionar Cliente
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Client List */}
       <AsyncBoundary

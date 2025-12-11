@@ -3,6 +3,8 @@
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -17,8 +19,12 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { clientFormSchema, type ClientFormValues } from "@/validators/client-schema";
+import {
+  clientFormSchema,
+  type ClientFormValues,
+} from "@/validators/client-schema";
 import type { CompanyDto } from "@/types/kanban";
+import { useState } from "react";
 
 export type CreateClientDialogProps = {
   /** Controls dialog visibility */
@@ -54,6 +60,13 @@ export function CreateClientDialog({
     },
   });
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const list = e.target.files ? Array.from(e.target.files) : [];
+    setFiles((prev) => [...prev, ...list]);
+  };
+
+  const [files, setFiles] = useState<File[]>([]);
+
   // Reset form when dialog opens
   useEffect(() => {
     if (open) {
@@ -73,30 +86,37 @@ export function CreateClientDialog({
     }
   };
 
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const dt = e.dataTransfer;
+    if (!dt) return;
+    const list = Array.from(dt.files);
+    setFiles((prev) => [...prev, ...list]);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-2xl rounded-2xl p-0 overflow-hidden bg-card border-0 shadow-[0_4px_24px_0_rgba(0,0,0,0.18)]"
-        showCloseButton={false}
+        className="max-w-3xl! rounded-2xl p-0 overflow-hidden bg-[#242d32] border-0 shadow-[0_4px_24px_0_rgba(0,0,0,0.18)]"
+        showCloseButton={true}
       >
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
           className="flex flex-col gap-0"
+          style={{ fontFamily: "var(--font-jakarta-sans, sans-serif)" }}
         >
           {/* Title Input */}
-          <div className="px-6 pt-6">
-            <Input
-              placeholder="Digite um título..."
-              className="rounded-xl bg-secondary text-lg font-semibold text-white placeholder:text-[#A3A6B1] border-0 h-14 px-4"
-              disabled
-            />
-          </div>
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="text-lg font-semibold text-white bg-[#34434c] rounded-full py-2.5 px-5">
+              Cliente
+            </DialogTitle>
+          </DialogHeader>
 
           {/* Content Grid */}
-          <div className="px-6 py-6">
-            <div className="grid grid-cols-2 gap-6">
+          <div className="px-6 py-4">
+            <div className="grid grid-cols-2 gap-4  bg-[#34434c] rounded-3xl px-5 py-6">
               {/* Left Column - Informações */}
-              <div className="bg-muted rounded-2xl p-6">
+              <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white mb-4">
                   Informações
                 </h3>
@@ -110,7 +130,7 @@ export function CreateClientDialog({
                     <Input
                       {...form.register("name")}
                       placeholder="Nome completo do cliente"
-                      className="rounded-xl bg-input text-sm text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
+                      className="rounded-2xl bg-[#242d32]! text-sm text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
                       autoFocus
                     />
                     {form.formState.errors.name && (
@@ -129,7 +149,7 @@ export function CreateClientDialog({
                       {...form.register("email")}
                       type="email"
                       placeholder="email@exemplo.com"
-                      className="rounded-xl bg-input text-sm text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
+                      className="rounded-2xl bg-[#242d32]! text-sm text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
                     />
                     {form.formState.errors.email && (
                       <span className="text-xs text-destructive">
@@ -146,7 +166,7 @@ export function CreateClientDialog({
                     <Input
                       {...form.register("phone")}
                       placeholder="(00) 00000-0000"
-                      className="rounded-xl bg-input text-sm text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
+                      className="rounded-2xl bg-[#242d32]! text-sm text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
                     />
                     {form.formState.errors.phone && (
                       <span className="text-xs text-destructive">
@@ -164,19 +184,22 @@ export function CreateClientDialog({
                       name="companyId"
                       control={form.control}
                       render={({ field }) => (
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger className="rounded-xl bg-input text-sm text-white border-0 h-10 px-4 w-full">
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="rounded-2xl bg-[#242d32]! text-sm text-white border-0 h-10 px-4 w-full">
                             <SelectValue placeholder="Selecione uma empresa" />
                           </SelectTrigger>
-                          <SelectContent className="bg-popover text-white border-0 max-h-60">
-                        {companies.map((company) => (
-                          <SelectItem
-                            key={company.companyId}
-                            value={company.companyId}
-                          >
-                            {company.name}
-                            </SelectItem>
-                          ))}
+                          <SelectContent className="rounded-2xl bg-[#242d32]! text-white border-0 max-h-60">
+                            {companies.map((company) => (
+                              <SelectItem
+                                key={company.companyId}
+                                value={company.companyId}
+                              >
+                                {company.name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       )}
@@ -196,42 +219,70 @@ export function CreateClientDialog({
                     <Input
                       value={new Date().toLocaleDateString("pt-BR")}
                       readOnly
-                      className="rounded-xl bg-input text-sm text-white border-0 h-10 px-4 cursor-not-allowed opacity-70"
+                      className="rounded-2xl bg-[#242d32]! text-sm text-white border-0 h-10 px-4 cursor-not-allowed opacity-80"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Right Column - Mídias */}
-              <div className="bg-muted rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Mídias</h3>
-
-                {/* Drag & Drop Area */}
-                <div className="flex items-center justify-center h-48 border-2 border-dashed border-[#A3A6B1] rounded-xl">
-                  <p className="text-sm text-[#A3A6B1] text-center px-4">
-                    Arraste os arquivos desejados
-                    <br />
-                    para realizar upload
-                  </p>
+              <div>
+                <label className="text-xs text-white font-medium">Mídias</label>
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={onDrop}
+                  className="mt-1 h-100 bg-[#242d32] border-2 border-dashed border-transparent flex items-center justify-center text-sm text-[#A3A6B1] rounded-3xl"
+                >
+                  <div className="text-center">
+                    <p>Arraste os arquivos desejados</p>
+                    <p>para realizar upload</p>
+                    <div className="mt-2">
+                      <input
+                        id="file"
+                        type="file"
+                        multiple
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="file"
+                        className="cursor-pointer text-xs text-white bg-[#1F6B3B] px-3 py-1 rounded-2xl"
+                      >
+                        Selecionar
+                      </label>
+                    </div>
+                  </div>
                 </div>
+
+                {/* preview */}
+                {files.length > 0 && (
+                  <div className="mt-2 flex gap-2 flex-wrap">
+                    {files.map((f, i) => (
+                      <div
+                        key={i}
+                        className="px-3 py-1 rounded bg-[#1F2937] text-xs text-white"
+                      >
+                        {f.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-
-          {/* Footer */}
           <DialogFooter className="px-6 pb-6 pt-0 flex justify-center gap-4">
             <Button
               type="button"
               variant="secondary"
               onClick={() => onOpenChange(false)}
-              className="min-w-[120px] h-11"
+              className="flex-1 max-w-24 rounded-lg bg-[#242d32] text-white hover:bg-[#363A46] border-0"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="min-w-[120px] h-11 bg-primary hover:bg-primary/90"
+              className="flex-1 max-w-24 rounded-lg bg-[#16a34a] text-white hover:bg-[#15803d]"
             >
               {isSubmitting ? "Salvando..." : "Salvar"}
             </Button>

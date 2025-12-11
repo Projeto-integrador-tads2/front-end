@@ -267,8 +267,10 @@ export default function CompanyDialog({
                   </div>
                 )}
               </div>
-              <DialogFooter className="flex flex-row gap-3 px-6 pb-6 pt-4 items-center justify-end">
-                <div className="flex gap-3">
+            </div>
+          </div>
+        </form>
+        <DialogFooter className="px-6 pb-6 pt-0 flex justify-center gap-4">
                   <Button
                     type="button"
                     variant="ghost"
@@ -286,11 +288,7 @@ export default function CompanyDialog({
                   >
                     {isSubmitting ? "Salvando..." : "Salvar"}
                   </Button>
-                </div>
               </DialogFooter>
-            </div>
-          </div>
-        </form>
       </DialogContent>
     </Dialog>
   );

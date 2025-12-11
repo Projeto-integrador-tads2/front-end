@@ -375,16 +375,6 @@ export default function EmpresaKanbanPage() {
 
             {/* Botões de Ação */}
             <div className="flex gap-3 mt-6 flex-col">
-              <button
-                onClick={() => {
-                  if (selectedCompany?.companyId) {
-                    window.location.href = `/empresas/${selectedCompany.companyId}/negociacoes`;
-                  }
-                }}
-                className="w-full px-4 py-2 rounded-2xl cursor-pointer bg-[#1F6B3B] text-white hover:bg-[#15803d] transition-colors text-sm font-medium"
-              >
-                Negociações
-              </button>
 
               <div className="flex gap-3">
                 <button

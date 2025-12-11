@@ -47,6 +47,13 @@ type ColumnDialogState = {
   editColumn: KanbanColumn | null;
 };
 
+// Tipo para controlar o delete unificado
+type DeleteDialogState = {
+  isOpen: boolean;
+  type: 'card' | 'column' | null;
+  id: string | null;
+};
+
 // -----------------------------
 // Page Component
 // -----------------------------
@@ -84,10 +91,11 @@ export default function EmpresasKanbanPage() {
     editColumn: null,
   });
 
-  // 👇 CORREÇÃO: O useState foi movido para CA (dentro da função)
-  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; cardId: string | null }>({
+  // 👇 CORREÇÃO: Estado unificado para exclusão (Card ou Coluna)
+  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
     isOpen: false,
-    cardId: null,
+    type: null,
+    id: null,
   });
 
   // ------------------------------------
@@ -105,19 +113,10 @@ export default function EmpresasKanbanPage() {
     });
   }, []);
 
+  // Abre modal para deletar Card
   const handleDeleteCard = useCallback((cardId: string) => {
-    setDeleteDialog({ isOpen: true, cardId });
+    setDeleteDialog({ isOpen: true, type: 'card', id: cardId });
   }, []);
-
-  /**
-   * Função que realmente vai no banco deletar (chamada pelo modal)
-   */
-  const confirmDeleteCard = useCallback(() => {
-    if (deleteDialog.cardId) {
-      removeCard.mutate(deleteDialog.cardId);
-      setDeleteDialog({ isOpen: false, cardId: null });
-    }
-  }, [deleteDialog.cardId, removeCard]);
 
   const handleCardSubmit = useCallback(
     (data: CardFormValues) => {
@@ -150,11 +149,10 @@ export default function EmpresasKanbanPage() {
     setColumnDialog({ isOpen: true, editColumn: column });
   }, []);
 
-  const handleDeleteColumn = useCallback(
-    (columnId: string) => {
-      removeColumn.mutate(columnId);
-    },
-    [removeColumn]
+  // Abre modal para deletar Coluna
+  const handleDeleteColumn = useCallback((columnId: string) => {
+      setDeleteDialog({ isOpen: true, type: 'column', id: columnId });
+    }, []
   );
 
   const handleColumnSubmit = useCallback(
@@ -177,6 +175,24 @@ export default function EmpresasKanbanPage() {
     },
     [columnDialog.editColumn, addColumn, editColumn, columns.length]
   );
+
+  // ------------------------------------
+  // Delete Handler Unificado
+  // ------------------------------------
+  const confirmDelete = useCallback(() => {
+    const { type, id } = deleteDialog;
+    
+    if (id) {
+      if (type === 'card') {
+        removeCard.mutate(id);
+      } else if (type === 'column') {
+        removeColumn.mutate(id);
+      }
+    }
+    
+    setDeleteDialog({ isOpen: false, type: null, id: null });
+  }, [deleteDialog, removeCard, removeColumn]);
+
 
   // ------------------------------------
   // Drag & Drop Handler
@@ -236,7 +252,7 @@ export default function EmpresasKanbanPage() {
           </div>
 
           <Button
-            className="bg-primary text-white font-bold px-7 py-2 text-[16px] rounded-full hover:bg-[#16a34a]"
+            className="bg-primary text-white font-bold px-7 py-2 text-[16px] rounded-full! hover:bg-[#16a34a]"
             onClick={handleOpenAddColumn}
           >
             Adicionar Coluna
@@ -328,15 +344,19 @@ export default function EmpresasKanbanPage() {
         isSubmitting={addColumn.isPending || editColumn.isPending}
       />
       
-      {/* Confirm Dialog */}
+      {/* Confirm Dialog (Unificado e Dinâmico) */}
       <ConfirmDialog
         open={deleteDialog.isOpen}
         onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, isOpen: open }))}
-        title="Excluir card"
-        description="Tem certeza que deseja excluir este card? Essa ação não pode ser desfeita."
+        title={deleteDialog.type === 'column' ? "Excluir Coluna" : "Excluir Card"}
+        description={
+          deleteDialog.type === 'column'
+            ? "Tem certeza que deseja excluir essa coluna? Todas as tarefas nela também serão afetadas."
+            : "Tem certeza que deseja excluir este card? Essa ação não pode ser desfeita."
+        }
         confirmLabel="Excluir"
         cancelLabel="Cancelar"
-        onConfirm={confirmDeleteCard}
+        onConfirm={confirmDelete}
       />
     </div>
   );
