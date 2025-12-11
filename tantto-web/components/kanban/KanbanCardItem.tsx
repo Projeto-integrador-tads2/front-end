@@ -2,9 +2,11 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, TrendingUp } from "lucide-react";
 import type { KanbanCard } from "@/types/kanban";
 import { useState } from "react";
+import { predictCompanyCard } from "@/services/kanban";
+import { toast } from "sonner";
 
 export type KanbanCardItemProps = {
   card: KanbanCard;
@@ -26,11 +28,56 @@ export function KanbanCardItem({
   disabled = false,
 }: KanbanCardItemProps) {
   const [showActions, setShowActions] = useState(false);
+  const [isPredicting, setIsPredicting] = useState(false);
   const colors = priorityColors[card.priority] || priorityColors["Média Prioridade"];
 
-  // Evita que o clique no botão inicie o "arrastar" card
   const stopPropagation = (e: React.PointerEvent | React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const handlePredict = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (isPredicting) return;
+
+    setIsPredicting(true);
+
+    try {
+      const result = await predictCompanyCard(card.id);
+
+      const predictionMessages = {
+        "Muito Provável": {
+          title: "Muito Provável",
+          description: "Esta empresa tem alta probabilidade de fechamento!",
+          color: "success"
+        },
+        "Provável": {
+          title: "Provável",
+          description: "Esta empresa tem boa probabilidade de fechamento.",
+          color: "info"
+        },
+        "Pouco Provável": {
+          title: "Pouco Provável",
+          description: "Esta empresa tem baixa probabilidade de fechamento.",
+          color: "warning"
+        }
+      };
+
+      const message = predictionMessages[result.result];
+
+      toast.success(message.title, {
+        description: message.description,
+        duration: 5000,
+      });
+    } catch (error) {
+      console.error("Prediction error:", error);
+      toast.error("Erro ao Prever", {
+        description: "Não foi possível obter a previsão. Tente novamente.",
+        duration: 4000,
+      });
+    } finally {
+      setIsPredicting(false);
+    }
   };
 
   return (
@@ -132,6 +179,31 @@ export function KanbanCardItem({
           ) : null}
         </div>
       )}
+
+      {/* Botão de Previsão de Fechamento */}
+      <div className="mt-3 pt-2 border-t border-[#292C36]">
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full h-8 text-xs font-semibold bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#4F46E5] hover:to-[#7C3AED] text-white border-0 rounded-lg shadow-sm transition-all duration-200"
+          onClick={handlePredict}
+          disabled={disabled || isPredicting}
+          onPointerDown={stopPropagation}
+          onMouseDown={stopPropagation}
+        >
+          {isPredicting ? (
+            <>
+              <span className="animate-spin mr-2">⏳</span>
+              Prevendo...
+            </>
+          ) : (
+            <>
+              <TrendingUp className="h-3.5 w-3.5 mr-1.5" />
+              Previsão de Fechamento
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

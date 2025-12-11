@@ -11,11 +11,13 @@ import { createCompany } from "@/services/companies/create-company";
 import { deleteCompany } from "@/services/companies/delete-company";
 import { updateCompany } from "@/services/companies/update-company";
 import { toDataUrl } from "@/lib/image";
+import { getQueryClient } from "@/config/getQueryClient";
 
 export type Company = CompanyFormValues & {
   id: string;
   avatar?: string;
   companyId?: string;
+  sector?: string;
 };
 
 export default function EmpresaKanbanPage() {
@@ -30,6 +32,8 @@ export default function EmpresaKanbanPage() {
   const [error, setError] = useState<string | null>(null);
   const [editCandidate, setEditCandidate] = useState<Company | null>(null);
 
+  const queryClient = getQueryClient();
+
   useEffect(() => {
     const loadCompanies = async () => {
       try {
@@ -41,6 +45,7 @@ export default function EmpresaKanbanPage() {
           legalName: company.name,
           representative: "",
           cnpj: company.cnpj,
+          sector: company.sector || "",
           createdAt: "",
           id: company.companyId || company.name,
           companyId: company.companyId,
@@ -92,6 +97,7 @@ export default function EmpresaKanbanPage() {
           const payload = {
             name: data.legalName,
             cnpj: data.cnpj.replace(/\D/g, ""),
+            sector: data.sector,
             ...(pictureBase64 ? { companyPicture: pictureBase64 } : {}),
           };
 
@@ -108,18 +114,20 @@ export default function EmpresaKanbanPage() {
                     legalName: data.legalName,
                     representative: data.representative,
                     cnpj: data.cnpj,
+                    sector: data.sector,
                     createdAt: data.createdAt,
                     avatar: pictureBase64 ?? c.avatar,
                   }
                 : c
             )
           );
-
+          queryClient.invalidateQueries({ queryKey: ["kanban-companies"] });
           setEditCandidate(null);
         } else {
           const response = await createCompany({
             name: data.legalName,
             cnpj: data.cnpj.replace(/\D/g, ""),
+            sector: data.sector,
             companyPicture: pictureBase64 || undefined,
           });
 
@@ -127,6 +135,7 @@ export default function EmpresaKanbanPage() {
             legalName: response.name,
             representative: data.representative,
             cnpj: response.cnpj,
+            sector: data.sector,
             createdAt: data.createdAt || new Date().toISOString(),
             id: response.companyId,
             companyId: response.companyId,
@@ -134,6 +143,7 @@ export default function EmpresaKanbanPage() {
           };
 
           setCompanies((prev) => [newCompany, ...prev]);
+          queryClient.invalidateQueries({ queryKey: ["kanban-companies"] });
         }
 
         // 🔥 AQUI FOI A ÚNICA ALTERAÇÃO
@@ -144,7 +154,7 @@ export default function EmpresaKanbanPage() {
         alert("Falha ao criar/atualizar empresa. Tente novamente.");
       }
     },
-    [editCandidate]
+    [editCandidate, queryClient]
   );
 
   const handleDeleteCompany = useCallback((id: string) => {

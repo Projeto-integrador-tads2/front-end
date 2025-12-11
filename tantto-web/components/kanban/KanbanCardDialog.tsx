@@ -40,30 +40,6 @@ export type KanbanCardDialogProps = {
   isSubmitting?: boolean;
 };
 
-/**
- * Dialog for creating or editing Kanban cards.
- *
- * @example
- * // Create mode
- * <KanbanCardDialog
- *   open={isOpen}
- *   onOpenChange={setIsOpen}
- *   onSubmit={handleCreateCard}
- *   columnId="column-1"
- *   companies={companies}
- * />
- *
- * @example
- * // Edit mode
- * <KanbanCardDialog
- *   open={isOpen}
- *   onOpenChange={setIsOpen}
- *   onSubmit={handleEditCard}
- *   columnId={card.stepColumnId}
- *   editCard={selectedCard}
- *   companies={companies}
- * />
- */
 export function KanbanCardDialog({
   open,
   onOpenChange,
@@ -89,6 +65,7 @@ export function KanbanCardDialog({
   // Reset form when dialog opens or edit card changes
   useEffect(() => {
     if (open) {
+      console.log(editCard)
       if (editCard) {
         form.reset({
           title: editCard.title || "",
@@ -110,6 +87,7 @@ export function KanbanCardDialog({
   }, [open, columnId, editCard, form, companies]);
 
   const handleSubmit = (data: CardFormValues) => {
+    console.log(data);
     onSubmit(data);
     if (!isSubmitting) {
       onOpenChange(false);

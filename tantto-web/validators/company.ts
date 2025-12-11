@@ -11,6 +11,9 @@ export const companySchema = z.object({
   cnpj: z.string().refine((val) => val.replace(/\D/g, "").length === 14, {
     message: "CNPJ deve ter 14 dígitos",
   }),
+  sector: z.enum(["Comércio", "Educação", "Indústria", "Saúde", "Serviços", "Tecnologia"], {
+    errorMap: () => ({ message: "Selecione um setor válido" }),
+  }),
   createdAt: z.string().min(1, "Data de Criação é obrigatória"),
   companyPicture: z.string().nullable().optional(),
 });

@@ -23,8 +23,6 @@ export type KanbanColumnHeaderProps = {
   onAddCard: () => void;
   /** Callback when edit column is requested */
   onEditColumn?: (column: KanbanColumn) => void;
-  /** Callback when delete column is requested */
-  onDeleteColumn?: (columnId: string) => void;
   /** Whether actions are disabled */
   disabled?: boolean;
 };
@@ -33,7 +31,6 @@ export function KanbanColumnHeader({
   column,
   onAddCard,
   onEditColumn,
-  onDeleteColumn,
   disabled = false,
 }: KanbanColumnHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
@@ -46,13 +43,6 @@ export function KanbanColumnHeader({
     onEditColumn?.(column);
   };
 
-  // ✅ CORREÇÃO AQUI: Removemos o window.confirm
-  const handleDeleteColumn = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowMenu(false);
-    // Chamamos direto a função do pai. O pai é quem vai mostrar o Modal bonito agora.
-    onDeleteColumn?.(column.id);
-  };
 
   return (
     <div
@@ -82,7 +72,7 @@ export function KanbanColumnHeader({
 
       <div className="flex items-center gap-1">
         {/* Column Actions Menu */}
-        {(onEditColumn || onDeleteColumn) && (
+        {onEditColumn && (
           <div className="relative">
             <Button
               size="icon"
@@ -106,24 +96,13 @@ export function KanbanColumnHeader({
                 className="absolute right-0 top-full mt-1 z-50 bg-[#23262F] rounded-lg shadow-lg border border-[#292C36] py-1 min-w-[120px]"
                 onMouseLeave={() => setShowMenu(false)}
               >
-                {onEditColumn && (
-                  <button
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-[#292C36] transition-colors"
-                    onClick={handleEditColumn}
-                  >
-                    <Pencil className="w-4 h-4" />
-                    Editar
-                  </button>
-                )}
-                {onDeleteColumn && (
-                  <button
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[#292C36] transition-colors"
-                    onClick={handleDeleteColumn}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Excluir
-                  </button>
-                )}
+                <button
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-[#292C36] transition-colors"
+                  onClick={handleEditColumn}
+                >
+                  <Pencil className="w-4 h-4" />
+                  Editar
+                </button>
               </div>
             )}
           </div>

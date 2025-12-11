@@ -18,7 +18,6 @@ export { KanbanCardDialog, type KanbanCardDialogProps, type CardFormValues } fro
 
 // Column components
 export { KanbanColumnHeader, type KanbanColumnHeaderProps } from "./KanbanColumnHeader";
-export { KanbanColumnDialog, type KanbanColumnDialogProps, type ColumnFormValues } from "./KanbanColumnDialog";
 
 // Data hook
 export {

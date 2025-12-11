@@ -17,20 +17,14 @@ import {
   type CardFormValues,
 } from "@/components/kanban/KanbanCardDialog";
 
-import {
-  KanbanColumnDialog,
-  type ColumnFormValues,
-} from "@/components/kanban/KanbanColumnDialog";
 
 import { KanbanCardItem } from "@/components/kanban/KanbanCardItem";
 import { KanbanColumnHeader } from "@/components/kanban/KanbanColumnHeader";
-import { Button } from "@/components/ui/button";
 import { AsyncBoundary } from "@/components/common/AsyncBoundary";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 import type {
   KanbanCard as KanbanCardType,
-  KanbanColumn,
 } from "@/types/kanban";
 
 // -----------------------------
@@ -42,10 +36,6 @@ type CardDialogState = {
   editCard: KanbanCardType | null;
 };
 
-type ColumnDialogState = {
-  isOpen: boolean;
-  editColumn: KanbanColumn | null;
-};
 
 // Tipo para controlar o delete unificado
 type DeleteDialogState = {
@@ -72,9 +62,6 @@ export default function EmpresasKanbanPage() {
     moveCard,
     removeCard,
 
-    addColumn,
-    editColumn,
-    removeColumn,
   } = useKanbanData();
 
   // ------------------------------------
@@ -86,10 +73,6 @@ export default function EmpresasKanbanPage() {
     editCard: null,
   });
 
-  const [columnDialog, setColumnDialog] = useState<ColumnDialogState>({
-    isOpen: false,
-    editColumn: null,
-  });
 
   // 👇 CORREÇÃO: Estado unificado para exclusão (Card ou Coluna)
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
@@ -139,59 +122,15 @@ export default function EmpresasKanbanPage() {
   );
 
   // ------------------------------------
-  // Column Handlers
-  // ------------------------------------
-  const handleOpenAddColumn = useCallback(() => {
-    setColumnDialog({ isOpen: true, editColumn: null });
-  }, []);
-
-  const handleOpenEditColumn = useCallback((column: KanbanColumn) => {
-    setColumnDialog({ isOpen: true, editColumn: column });
-  }, []);
-
-  // Abre modal para deletar Coluna
-  const handleDeleteColumn = useCallback((columnId: string) => {
-      setDeleteDialog({ isOpen: true, type: 'column', id: columnId });
-    }, []
-  );
-
-  const handleColumnSubmit = useCallback(
-    (data: ColumnFormValues) => {
-      if (columnDialog.editColumn) {
-        editColumn.mutate({
-          id: columnDialog.editColumn.id,
-          name: data.name,
-          color: data.color,
-        });
-      } else {
-        addColumn.mutate({
-          name: data.name,
-          color: data.color,
-          order: columns.length + 1,
-        });
-      }
-
-      setColumnDialog({ isOpen: false, editColumn: null });
-    },
-    [columnDialog.editColumn, addColumn, editColumn, columns.length]
-  );
-
-  // ------------------------------------
   // Delete Handler Unificado
   // ------------------------------------
   const confirmDelete = useCallback(() => {
     const { type, id } = deleteDialog;
-    
-    if (id) {
-      if (type === 'card') {
-        removeCard.mutate(id);
-      } else if (type === 'column') {
-        removeColumn.mutate(id);
-      }
+    if (id && type === 'card') {
+      removeCard.mutate(id);
     }
-    
     setDeleteDialog({ isOpen: false, type: null, id: null });
-  }, [deleteDialog, removeCard, removeColumn]);
+  }, [deleteDialog, removeCard]);
 
 
   // ------------------------------------
@@ -250,13 +189,6 @@ export default function EmpresasKanbanPage() {
               <div className="mt-1 ml-[90px] h-[3px] w-[60px] bg-[#22C55E] rounded-full" />
             </div>
           </div>
-
-          <Button
-            className="bg-primary text-white font-bold px-7 py-2 text-[16px] rounded-full! hover:bg-[#16a34a]"
-            onClick={handleOpenAddColumn}
-          >
-            Adicionar Coluna
-          </Button>
         </div>
       </div>
 
@@ -273,12 +205,6 @@ export default function EmpresasKanbanPage() {
           emptyFallback={
             <div className="flex flex-col items-center py-16 text-center">
               <p className="text-[#A3A6B1] mb-4">Nenhuma coluna encontrada.</p>
-              <Button
-                className="bg-primary text-white font-bold px-6 py-2 rounded-full"
-                onClick={handleOpenAddColumn}
-              >
-                Criar primeira coluna
-              </Button>
             </div>
           }
         >
@@ -297,8 +223,6 @@ export default function EmpresasKanbanPage() {
                   <KanbanColumnHeader
                     column={column}
                     onAddCard={() => handleOpenAddCard(column.id)}
-                    onEditColumn={handleOpenEditColumn}
-                    onDeleteColumn={handleDeleteColumn}
                   />
 
                   <KanbanCards id={column.id} className="min-h-[120px]">
@@ -333,27 +257,12 @@ export default function EmpresasKanbanPage() {
         isSubmitting={addCard.isPending || editCard.isPending}
       />
 
-      {/* Column Dialog */}
-      <KanbanColumnDialog
-        open={columnDialog.isOpen}
-        onOpenChange={(open) =>
-          !open && setColumnDialog({ isOpen: false, editColumn: null })
-        }
-        onSubmit={handleColumnSubmit}
-        editColumn={columnDialog.editColumn}
-        isSubmitting={addColumn.isPending || editColumn.isPending}
-      />
-      
       {/* Confirm Dialog (Unificado e Dinâmico) */}
       <ConfirmDialog
         open={deleteDialog.isOpen}
         onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, isOpen: open }))}
-        title={deleteDialog.type === 'column' ? "Excluir Coluna" : "Excluir Card"}
-        description={
-          deleteDialog.type === 'column'
-            ? "Tem certeza que deseja excluir essa coluna? Todas as tarefas nela também serão afetadas."
-            : "Tem certeza que deseja excluir este card? Essa ação não pode ser desfeita."
-        }
+        title={"Excluir Card"}
+        description={"Tem certeza que deseja excluir este card? Essa ação não pode ser desfeita."}
         confirmLabel="Excluir"
         cancelLabel="Cancelar"
         onConfirm={confirmDelete}
