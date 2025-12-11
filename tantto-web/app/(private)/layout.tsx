@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import nextAuthOptions from "@/config/auth";
 import { redirect } from "next/navigation";
 
+
 export default async function PrivateLayout({
   children,
 }: {
@@ -15,11 +16,9 @@ export default async function PrivateLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-background)]">
-      {/* Sidebar fixa à esquerda */}
+    <div className="flex h-screen overflow-hidden bg-background ">
       <Sidebar />
-      {/* Área principal de conteúdo */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 overflow-auto no-scrollbar">{children}</main>
     </div>
   );
 }

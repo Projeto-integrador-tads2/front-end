@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
@@ -109,7 +109,10 @@ export function KanbanColumnDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm rounded-2xl p-0 overflow-hidden bg-[#23262F] border-0 shadow-[0_4px_24px_0_rgba(0,0,0,0.18)]">
+      <DialogContent className="max-w-sm rounded-2xl p-0 overflow-hidden bg-[#242D32] border-0 shadow-[0_4px_24px_0_rgba(0,0,0,0.18)]">
+        <DialogDescription className="sr-only">
+          Formulário para criar ou editar colunas do Kanban
+        </DialogDescription>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
           className="flex flex-col gap-0"
@@ -128,7 +131,7 @@ export function KanbanColumnDialog({
               <Input
                 {...form.register("name")}
                 placeholder="Nome da coluna"
-                className="rounded-lg bg-[#292C36] text-sm font-medium text-white placeholder:text-[#A3A6B1] border-0"
+                className="rounded-2xl bg-[#292C36] text-sm font-medium text-white placeholder:text-[#A3A6B1] border-0"
                 autoFocus
               />
               {form.formState.errors.name && (
@@ -148,11 +151,10 @@ export function KanbanColumnDialog({
                   <button
                     key={color}
                     type="button"
-                    className={`w-8 h-8 rounded-full border-2 transition-all ${
-                      selectedColor === color
+                    className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColor === color
                         ? "border-white scale-110"
                         : "border-transparent hover:border-white/50"
-                    }`}
+                      }`}
                     style={{ backgroundColor: color }}
                     onClick={() => form.setValue("color", color)}
                   />
@@ -164,14 +166,14 @@ export function KanbanColumnDialog({
                 <Input
                   type="color"
                   {...form.register("color")}
-                  className="w-10 h-10 p-0 border-0 rounded-lg cursor-pointer"
+                  className="w-10 h-10 p-0 border-0 rounded-2xl cursor-pointer"
                   style={{ backgroundColor: selectedColor }}
                 />
                 <Input
                   value={selectedColor}
                   onChange={(e) => form.setValue("color", e.target.value)}
                   placeholder="#3B82F6"
-                  className="rounded-lg bg-[#292C36] text-xs text-white placeholder:text-[#A3A6B1] border-0 flex-1"
+                  className="rounded-2xl bg-[#292C36] text-xs text-white placeholder:text-[#A3A6B1] border-0 flex-1"
                 />
               </div>
               {form.formState.errors.color && (

@@ -108,13 +108,13 @@ export default function EmpresaKanbanPage() {
             prev.map((c) =>
               c.companyId === response.companyId
                 ? {
-                    ...c,
-                    legalName: data.legalName,
-                    representative: data.representative,
-                    cnpj: data.cnpj,
-                    createdAt: data.createdAt,
-                    avatar: pictureBase64 ?? c.avatar,
-                  }
+                  ...c,
+                  legalName: data.legalName,
+                  representative: data.representative,
+                  cnpj: data.cnpj,
+                  createdAt: data.createdAt,
+                  avatar: pictureBase64 ?? c.avatar,
+                }
                 : c
             )
           );
@@ -200,7 +200,7 @@ export default function EmpresaKanbanPage() {
             </div>
 
             <Button
-              className="rounded-full! font-bold"
+              className="bg-primary text-white font-bold px-7 py-2 text-[16px] rounded-full! hover:bg-[#16a34a] border-0"
               onClick={handleOpenAddCompany}
             >
               Adicionar Empresa
@@ -366,8 +366,8 @@ export default function EmpresaKanbanPage() {
                 <p className="text-sm text-white font-medium">
                   {selectedCompany.createdAt
                     ? new Date(selectedCompany.createdAt).toLocaleDateString(
-                        "pt-BR"
-                      )
+                      "pt-BR"
+                    )
                     : "N/A"}
                 </p>
               </div>
