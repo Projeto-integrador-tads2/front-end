@@ -13,9 +13,6 @@ export {
 export {
   getAllColumns,
   getColumnById,
-  createColumn,
-  updateColumn,
-  deleteColumn,
 } from "./columns";
 
 // Company operations

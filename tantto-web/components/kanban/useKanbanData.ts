@@ -4,20 +4,14 @@ import {
   updateCard,
   deleteCard,
   moveCardToColumn,
-  createColumn,
-  updateColumn,
-  deleteColumn,
   getAllCompanies,
 } from "@/services/kanban";
 import type {
   KanbanColumn as KanbanColumnType,
   KanbanCard as KanbanCardType,
   KanbanColumnResponse,
-  CompanyCardDetails,
   CreateCardInput,
   UpdateCardInput,
-  CreateColumnInput,
-  UpdateColumnInput,
   CompanyDto,
   KanbanPriority,
 } from "@/types/kanban";
@@ -276,76 +270,6 @@ export function useKanbanData() {
     },
   });
 
-  // ============================================
-  // COLUMN MUTATIONS
-  // ============================================
-
-  /**
-   * Creates a new column on the board.
-   */
-  const addColumn = useMutation({
-    mutationFn: async (input: CreateColumnInput) => {
-      return createColumn(input);
-    },
-    onSuccess: (data) => {
-      handleMutationSuccess(data, "Coluna criada com sucesso!", "create-column");
-      queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
-    },
-    onError: (error) => {
-      handleMutationError(error, "Erro ao criar coluna. Tente novamente.", "create-column");
-      console.error("Failed to create column:", error);
-    },
-  });
-
-  /**
-   * Updates an existing column.
-   */
-  const editColumn = useMutation({
-    mutationFn: async (input: UpdateColumnInput) => {
-      return updateColumn(input);
-    },
-    onSuccess: (data) => {
-      handleMutationSuccess(data, "Coluna atualizada com sucesso!", "update-column");
-      queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
-    },
-    onError: (error) => {
-      handleMutationError(error, "Erro ao atualizar coluna. Tente novamente.", "update-column");
-      console.error("Failed to update column:", error);
-    },
-  });
-
-  /**
-   * Removes a column from the board.
-   * Warning: This will affect all cards in the column.
-   */
-  const removeColumn = useMutation({
-    mutationFn: async (columnId: string) => {
-      return deleteColumn(columnId);
-    },
-    // Optimistic update
-    onMutate: async (columnId) => {
-      await queryClient.cancelQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
-      const previousColumns = queryClient.getQueryData<KanbanColumn[]>(
-        KANBAN_QUERY_KEYS.columns
-      );
-
-      if (previousColumns) {
-        const newColumns = previousColumns.filter((col) => col.id !== columnId);
-        queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, newColumns);
-      }
-
-      return { previousColumns };
-    },
-    onError: (_error, _columnId, context) => {
-      if (context?.previousColumns) {
-        queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, context.previousColumns);
-      }
-      toastError("Erro ao excluir coluna. Tente novamente.", "delete-column");
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
-    },
-  });
 
   // ============================================
   // HELPER FUNCTIONS
@@ -391,10 +315,7 @@ export function useKanbanData() {
     moveCard,
     removeCard,
 
-    // Column mutations
-    addColumn,
-    editColumn,
-    removeColumn,
+    // Column mutation (only update allowed)
 
     // Helpers
     getColumnCardsCount,

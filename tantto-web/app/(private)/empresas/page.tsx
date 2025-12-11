@@ -11,6 +11,7 @@ import { createCompany } from "@/services/companies/create-company";
 import { deleteCompany } from "@/services/companies/delete-company";
 import { updateCompany } from "@/services/companies/update-company";
 import { toDataUrl } from "@/lib/image";
+import { getQueryClient } from "@/config/getQueryClient";
 
 export type Company = CompanyFormValues & {
   id: string;
@@ -29,6 +30,8 @@ export default function EmpresaKanbanPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editCandidate, setEditCandidate] = useState<Company | null>(null);
+
+  const queryClient = getQueryClient();
 
   useEffect(() => {
     const loadCompanies = async () => {
@@ -114,7 +117,7 @@ export default function EmpresaKanbanPage() {
                 : c
             )
           );
-
+          queryClient.invalidateQueries({ queryKey: ["kanban-companies"] });
           setEditCandidate(null);
         } else {
           const response = await createCompany({
@@ -134,6 +137,7 @@ export default function EmpresaKanbanPage() {
           };
 
           setCompanies((prev) => [newCompany, ...prev]);
+          queryClient.invalidateQueries({ queryKey: ["kanban-companies"] });
         }
 
         // 🔥 AQUI FOI A ÚNICA ALTERAÇÃO
