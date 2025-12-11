@@ -141,10 +141,10 @@ export function KanbanCardDialog({
                 value={form.watch("companyId")}
                 onValueChange={(v) => form.setValue("companyId", v)}
               >
-                <SelectTrigger className="rounded-xl bg-[#292C36] text-[13px] text-white border-0 h-10 px-4">
+                <SelectTrigger className="rounded-2xl bg-[#292C36] text-[13px] text-white border-0 h-10 px-4">
                   <SelectValue placeholder="Selecione uma empresa" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#292C36] text-white border-0 max-h-60">
+                <SelectContent className="bg-[#292C36] rounded-2xl text-white border-0 max-h-60">
                   {companies.map((company) => (
                     <SelectItem key={company.companyId} value={company.companyId}>
                       {company.name}
@@ -163,7 +163,7 @@ export function KanbanCardDialog({
             <Input
               {...form.register("title")}
               placeholder="Título do card (opcional)"
-              className="rounded-xl bg-[#292C36] text-[15px] font-semibold text-white placeholder:text-[#A3A6B1] border-0 h-11 px-4"
+              className="rounded-2xl bg-[#292C36] text-[15px] font-semibold text-white placeholder:text-[#A3A6B1] border-0 h-11 px-4"
               autoFocus
             />
             {form.formState.errors.title && (
@@ -176,7 +176,7 @@ export function KanbanCardDialog({
             <Input
               {...form.register("description")}
               placeholder="Descrição (opcional)"
-              className="rounded-xl bg-[#292C36] text-[13px] text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
+              className="rounded-2xl bg-[#292C36] font-semibold text-[13px] text-white placeholder:text-[#A3A6B1] border-0 h-10 px-4"
             />
             {form.formState.errors.description && (
               <span className="text-xs text-destructive">
@@ -189,10 +189,10 @@ export function KanbanCardDialog({
               value={form.watch("priority")}
               onValueChange={(v) => form.setValue("priority", v as KanbanPriority)}
             >
-              <SelectTrigger className="rounded-xl bg-[#292C36] text-[13px] text-white border-0 h-10 px-4">
+              <SelectTrigger className="rounded-2xl bg-[#292C36] text-[13px] text-white border-0 h-10 px-4">
                 <SelectValue placeholder="Prioridade" />
               </SelectTrigger>
-              <SelectContent className="bg-[#292C36] text-white border-0">
+              <SelectContent className="bg-[#292C36] rounded-2xl text-white border-0">
                 <SelectItem value="Alta Prioridade">Alta Prioridade</SelectItem>
                 <SelectItem value="Média Prioridade">Média Prioridade</SelectItem>
                 <SelectItem value="Baixa Prioridade">Baixa Prioridade</SelectItem>

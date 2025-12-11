@@ -46,12 +46,12 @@ export function KanbanColumnHeader({
     onEditColumn?.(column);
   };
 
+  // ✅ CORREÇÃO AQUI: Removemos o window.confirm
   const handleDeleteColumn = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowMenu(false);
-    if (window.confirm(`Tem certeza que deseja excluir a coluna "${column.name}"?`)) {
-      onDeleteColumn?.(column.id);
-    }
+    // Chamamos direto a função do pai. O pai é quem vai mostrar o Modal bonito agora.
+    onDeleteColumn?.(column.id);
   };
 
   return (
