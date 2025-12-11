@@ -7,6 +7,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 
@@ -25,6 +32,7 @@ export type CompanyFormValues = {
   legalName: string;
   representative: string;
   cnpj: string;
+  sector: string;
   createdAt: string;
 };
 
@@ -55,6 +63,7 @@ export default function CompanyDialog({
       legalName: "",
       representative: "",
       cnpj: "",
+      sector: "",
       createdAt: "",
     },
     mode: "onBlur",
@@ -62,6 +71,7 @@ export default function CompanyDialog({
 
   const legalNameValue = watch("legalName");
   const cnpjValue = watch("cnpj");
+  const sectorValue = watch("sector");
   const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
@@ -104,6 +114,11 @@ export default function CompanyDialog({
   };
 
   const onFormSubmit = async (data: CompanyFormValues) => {
+    if (!data.sector || data.sector === "") {
+      setValue("sector", "", { shouldValidate: true });
+      return;
+    }
+
     if (onSubmit) await onSubmit(data, files);
     onOpenChange(false);
     setFiles([]);
@@ -198,6 +213,31 @@ export default function CompanyDialog({
                   {errors.cnpj && (
                     <p className="text-xs text-red-400 mt-1">
                       {errors.cnpj.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-xs text-white font-medium">Setor *</label>
+                  <Select
+                    value={watch("sector")}
+                    onValueChange={(value) => setValue("sector", value)}
+                  >
+                    <SelectTrigger className="mt-1 !bg-[#242d32] text-white border-0 h-10">
+                      <SelectValue placeholder="Selecione um setor" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#242d32] text-white border-[#363A46]">
+                      <SelectItem value="Comércio">Comércio</SelectItem>
+                      <SelectItem value="Educação">Educação</SelectItem>
+                      <SelectItem value="Indústria">Indústria</SelectItem>
+                      <SelectItem value="Saúde">Saúde</SelectItem>
+                      <SelectItem value="Serviços">Serviços</SelectItem>
+                      <SelectItem value="Tecnologia">Tecnologia</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.sector && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.sector.message}
                     </p>
                   )}
                 </div>

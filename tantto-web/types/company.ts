@@ -4,22 +4,25 @@ export interface CreateCompanyResponse {
   companyId: string;
   name: string;
   cnpj: string;
+  sector?: string;
   companyPicture?: string | null;
-  message: string; 
+  message: string;
 }
 
 export interface CreateCompanyRequest{
   name: string;
   cnpj: string;
+  sector?: string;
   companyPicture?: string | null;
 }
 
-// Get 
+// Get
 
 export interface Company{
   companyId: string;
   name: string;
   cnpj: string;
+  sector?: string;
   companyPicture?: string | null;
 }
 

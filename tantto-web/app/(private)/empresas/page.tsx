@@ -17,6 +17,7 @@ export type Company = CompanyFormValues & {
   id: string;
   avatar?: string;
   companyId?: string;
+  sector?: string;
 };
 
 export default function EmpresaKanbanPage() {
@@ -44,6 +45,7 @@ export default function EmpresaKanbanPage() {
           legalName: company.name,
           representative: "",
           cnpj: company.cnpj,
+          sector: company.sector || "",
           createdAt: "",
           id: company.companyId || company.name,
           companyId: company.companyId,
@@ -95,6 +97,7 @@ export default function EmpresaKanbanPage() {
           const payload = {
             name: data.legalName,
             cnpj: data.cnpj.replace(/\D/g, ""),
+            sector: data.sector,
             ...(pictureBase64 ? { companyPicture: pictureBase64 } : {}),
           };
 
@@ -111,6 +114,7 @@ export default function EmpresaKanbanPage() {
                     legalName: data.legalName,
                     representative: data.representative,
                     cnpj: data.cnpj,
+                    sector: data.sector,
                     createdAt: data.createdAt,
                     avatar: pictureBase64 ?? c.avatar,
                   }
@@ -123,6 +127,7 @@ export default function EmpresaKanbanPage() {
           const response = await createCompany({
             name: data.legalName,
             cnpj: data.cnpj.replace(/\D/g, ""),
+            sector: data.sector,
             companyPicture: pictureBase64 || undefined,
           });
 
@@ -130,6 +135,7 @@ export default function EmpresaKanbanPage() {
             legalName: response.name,
             representative: data.representative,
             cnpj: response.cnpj,
+            sector: data.sector,
             createdAt: data.createdAt || new Date().toISOString(),
             id: response.companyId,
             companyId: response.companyId,
@@ -148,7 +154,7 @@ export default function EmpresaKanbanPage() {
         alert("Falha ao criar/atualizar empresa. Tente novamente.");
       }
     },
-    [editCandidate]
+    [editCandidate, queryClient]
   );
 
   const handleDeleteCompany = useCallback((id: string) => {
