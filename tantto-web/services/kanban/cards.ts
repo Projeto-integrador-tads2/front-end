@@ -61,6 +61,9 @@ export async function getCardsByColumnId(columnId: string): Promise<CompanyCardD
  */
 export async function createCard(input: CreateCardInput): Promise<CompanyCardDetails> {
   const payload = {
+    name: input.name,
+    priority: input.priority,
+    description: input.description,
     companyId: input.companyId,
     stepColumnId: input.stepColumnId,
   };
@@ -87,22 +90,21 @@ export async function updateCard(input: UpdateCardInput): Promise<CompanyCardDet
 /**
  * Moves a card to a different column.
  * This is a convenience wrapper around updateCard for drag-and-drop operations.
+ * Only sends the stepColumnId to update the card's column position.
  *
  * @param cardId - The ID of the card to move
  * @param targetColumnId - The ID of the target column
- * @param companyId - The company ID (required by the API)
  * @returns Promise<CompanyCardDetails> - The updated card
  */
 export async function moveCardToColumn(
   cardId: string,
   targetColumnId: string,
-  companyId: string
 ): Promise<CompanyCardDetails> {
-  return updateCard({
-    companyCardId: cardId,
-    companyId,
-    stepColumnId: targetColumnId,
-  });
+  const response = await api.patch<CompanyCardDetails>(
+    `/CompanyCard/update/${cardId}`,
+    { stepColumnId: targetColumnId }
+  );
+  return response.data;
 }
 
 /**

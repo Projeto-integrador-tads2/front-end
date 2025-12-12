@@ -73,6 +73,9 @@ export default function EmpresasKanbanPage() {
     editCard: null,
   });
 
+  // Track original column before drag starts
+  const [draggedCardOriginalColumn, setDraggedCardOriginalColumn] = useState<string | null>(null);
+
 
   // 👇 CORREÇÃO: Estado unificado para exclusão (Card ou Coluna)
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
@@ -106,11 +109,17 @@ export default function EmpresasKanbanPage() {
       if (cardDialog.editCard) {
         editCard.mutate({
           companyCardId: cardDialog.editCard.id,
+          description: data.description || "",
+          name: data.name || "",
+          priority: data.priority ?? "Média Prioridade",
           companyId: data.companyId,
           stepColumnId: data.stepColumnId,
         });
       } else {
         addCard.mutate({
+          description: data.description || "",
+          name: data.name || "",
+          priority: data.priority ?? "Média Prioridade",
           companyId: data.companyId,
           stepColumnId: data.stepColumnId,
         });
@@ -134,30 +143,59 @@ export default function EmpresasKanbanPage() {
 
 
   // ------------------------------------
-  // Drag & Drop Handler
+  // Drag & Drop Handlers
   // ------------------------------------
+  const handleDragStart = useCallback(
+    (event: { active: { id: string | number } }) => {
+      const card = allCards.find((c) => c.id === event.active.id);
+      if (card) {
+        setDraggedCardOriginalColumn(card.stepColumnId);
+      }
+    },
+    [allCards]
+  );
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
 
-      if (!over || active.id === over.id) return;
+
+      if (!over || active.id === over.id) {
+        setDraggedCardOriginalColumn(null);
+        return;
+      }
 
       const draggedCard = allCards.find((c) => c.id === active.id);
-      if (!draggedCard) return;
+      if (!draggedCard) {
+        setDraggedCardOriginalColumn(null);
+        return;
+      }
 
+      // Determine target column: either the column itself or the column of the card we're hovering over
       const targetColumnId =
         columns.find((col) => col.id === over.id)?.id ||
         allCards.find((c) => c.id === over.id)?.stepColumnId;
 
-      if (!targetColumnId || targetColumnId === draggedCard.stepColumnId) return;
 
+      if (!targetColumnId || targetColumnId === draggedCardOriginalColumn) {
+        setDraggedCardOriginalColumn(null);
+        return;
+      }
+
+      // Call API to update the card's column with complete payload (same as dialog)
       moveCard.mutate({
-        cardId: draggedCard.id,
-        targetColumnId,
+        companyCardId: draggedCard.id,
+        name: draggedCard.name || "",
+        description: draggedCard.description || "",
+        priority: draggedCard.priority ?? "Média Prioridade",
         companyId: draggedCard.companyId,
+        stepColumnId: targetColumnId,
       });
+
+      // Reset tracking
+      setDraggedCardOriginalColumn(null);
     },
-    [allCards, columns, moveCard]
+    [allCards, columns, moveCard, draggedCardOriginalColumn]
   );
 
   // ------------------------------------
@@ -212,6 +250,7 @@ export default function EmpresasKanbanPage() {
             <KanbanProvider
               columns={columnsData}
               data={allCards}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
               {(column) => (

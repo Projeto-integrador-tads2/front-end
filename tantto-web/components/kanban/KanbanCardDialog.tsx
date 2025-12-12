@@ -14,7 +14,7 @@ import type { CompanyDto } from "@/types/kanban";
  * Validates title, description, priority, and required IDs.
  */
 const cardFormSchema = z.object({
-  title: z.string().min(1, "Título obrigatório").max(60, "Máximo 60 caracteres").optional(),
+  name: z.string().min(1, "Título obrigatório").max(60, "Máximo 60 caracteres").optional(),
   description: z.string().max(200, "Máximo 200 caracteres").optional(),
   priority: z.enum(["Alta Prioridade", "Média Prioridade", "Baixa Prioridade"]).optional(),
   stepColumnId: z.string().min(1, "Coluna obrigatória"),
@@ -54,7 +54,7 @@ export function KanbanCardDialog({
   const form = useForm<CardFormValues>({
     resolver: zodResolver(cardFormSchema),
     defaultValues: {
-      title: "",
+      name: "",
       description: "",
       priority: "Alta Prioridade",
       stepColumnId: columnId,
@@ -65,10 +65,9 @@ export function KanbanCardDialog({
   // Reset form when dialog opens or edit card changes
   useEffect(() => {
     if (open) {
-      console.log(editCard)
       if (editCard) {
         form.reset({
-          title: editCard.title || "",
+          name: editCard.title || "",
           description: editCard.description || "",
           priority: editCard.priority || "Alta Prioridade",
           stepColumnId: editCard.stepColumnId || columnId,
@@ -76,7 +75,7 @@ export function KanbanCardDialog({
         });
       } else {
         form.reset({
-          title: "",
+          name: "",
           description: "",
           priority: "Alta Prioridade",
           stepColumnId: columnId,
@@ -87,7 +86,6 @@ export function KanbanCardDialog({
   }, [open, columnId, editCard, form, companies]);
 
   const handleSubmit = (data: CardFormValues) => {
-    console.log(data);
     onSubmit(data);
     if (!isSubmitting) {
       onOpenChange(false);
@@ -139,14 +137,14 @@ export function KanbanCardDialog({
 
             {/* Title (optional, for display purposes) */}
             <Input
-              {...form.register("title")}
+              {...form.register("name")}
               placeholder="Título do card (opcional)"
               className="rounded-2xl bg-[#292C36] text-[15px] font-semibold text-white placeholder:text-[#A3A6B1] border-0 h-11 px-4"
               autoFocus
             />
-            {form.formState.errors.title && (
+            {form.formState.errors.name && (
               <span className="text-xs text-destructive">
-                {form.formState.errors.title.message}
+                {form.formState.errors.name.message}
               </span>
             )}
 
