@@ -193,7 +193,6 @@ export function KanbanCardItem({
         >
           {isPredicting ? (
             <>
-              <span className="animate-spin mr-2">⏳</span>
               Prevendo...
             </>
           ) : (
