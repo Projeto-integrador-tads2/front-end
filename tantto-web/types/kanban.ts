@@ -12,6 +12,9 @@ export interface CompanyCardDetails {
   id: string;
   userId: string;
   userName: string | null;
+  name: string | null;
+  priority: KanbanPriority;
+  description: string | null;
   companyId: string;
   companyName: string | null;
   stepColumnId: string;
@@ -36,6 +39,7 @@ export interface KanbanColumnResponse {
   id: string;
   name: string;
   color: string;
+  order: number;
   cards: CompanyCardDetails[];
 }
 
@@ -100,6 +104,9 @@ export interface KanbanColumn {
  * Input type for creating a new card.
  */
 export interface CreateCardInput {
+  name: string;
+  priority: KanbanPriority;
+  description: string;
   companyId: string;
   stepColumnId: string;
 }
@@ -110,6 +117,9 @@ export interface CreateCardInput {
 export interface UpdateCardInput {
   companyCardId: string;
   userId?: string;
+  name: string;
+  priority: KanbanPriority;
+  description: string;
   companyId: string;
   stepColumnId: string;
 }

@@ -4,6 +4,7 @@ import type {
   CompanyCardDetails,
   CreateCardInput,
   UpdateCardInput,
+  KanbanPriority,
 } from "@/types/kanban";
 
 /**
@@ -61,6 +62,9 @@ export async function getCardsByColumnId(columnId: string): Promise<CompanyCardD
  */
 export async function createCard(input: CreateCardInput): Promise<CompanyCardDetails> {
   const payload = {
+    name: input.name,
+    priority: input.priority,
+    description: input.description,
     companyId: input.companyId,
     stepColumnId: input.stepColumnId,
   };
@@ -96,12 +100,19 @@ export async function updateCard(input: UpdateCardInput): Promise<CompanyCardDet
 export async function moveCardToColumn(
   cardId: string,
   targetColumnId: string,
-  companyId: string
+  companyId: string,
+  name?: string,
+  description?: string,
+  priority?: KanbanPriority,
 ): Promise<CompanyCardDetails> {
   return updateCard({
+
     companyCardId: cardId,
     companyId,
     stepColumnId: targetColumnId,
+    name: name || "",
+    description: description || "",
+    priority: priority || "Média Prioridade",
   });
 }
 

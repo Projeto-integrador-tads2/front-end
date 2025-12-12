@@ -106,11 +106,17 @@ export default function EmpresasKanbanPage() {
       if (cardDialog.editCard) {
         editCard.mutate({
           companyCardId: cardDialog.editCard.id,
+          description: data.description || "",
+          name: data.name || "",
+          priority: data.priority ?? "Média Prioridade",
           companyId: data.companyId,
           stepColumnId: data.stepColumnId,
         });
       } else {
         addCard.mutate({
+          description: data.description || "",
+          name: data.name || "",
+          priority: data.priority ?? "Média Prioridade",
           companyId: data.companyId,
           stepColumnId: data.stepColumnId,
         });

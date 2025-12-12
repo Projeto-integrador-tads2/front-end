@@ -144,7 +144,7 @@ export function KanbanCardItem({
 
       {/* Título e Descrição */}
       <div className="font-bold text-[16px] text-white leading-tight mb-0.5 pr-16">
-        {card.title || card.companyName || "Sem título"}
+        {card.name || "Sem título"}
       </div>
       <div className="text-[13px] text-[#A3A6B1] mb-2 line-clamp-2">
         {card.description || `Empresa: ${card.companyName || "N/A"}`}

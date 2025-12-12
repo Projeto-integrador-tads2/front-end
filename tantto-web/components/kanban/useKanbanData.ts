@@ -46,12 +46,13 @@ function transformApiResponse(apiColumns: KanbanColumnResponse[]): KanbanColumn[
     id: column.id,
     name: column.name,
     color: column.color,
+    order: column.order || 0,
     cards: (column.cards || []).map((card): KanbanCard => ({
       id: card.id,
-      name: card.companyName || "Sem nome",
-      title: card.companyName || "Sem título",
-      description: `Responsável: ${card.userName || "Não atribuído"}`,
-      priority: "Média Prioridade" as KanbanPriority,
+      name: card.name || "",
+      title: card.name || "",
+      description: card.description || "",
+      priority: card.priority as KanbanPriority,
       column: column.name,
       stepColumnId: card.stepColumnId,
       companyId: card.companyId,
@@ -296,7 +297,7 @@ export function useKanbanData() {
 
   return {
     // Data
-    columns,
+    columns: [...columns].sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0)),
     companies,
     allCards,
     totalCardsCount,
