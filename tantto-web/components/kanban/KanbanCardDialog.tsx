@@ -65,7 +65,6 @@ export function KanbanCardDialog({
   // Reset form when dialog opens or edit card changes
   useEffect(() => {
     if (open) {
-      console.log(editCard)
       if (editCard) {
         form.reset({
           name: editCard.title || "",
@@ -87,7 +86,6 @@ export function KanbanCardDialog({
   }, [open, columnId, editCard, form, companies]);
 
   const handleSubmit = (data: CardFormValues) => {
-    console.log(data);
     onSubmit(data);
     if (!isSubmitting) {
       onOpenChange(false);

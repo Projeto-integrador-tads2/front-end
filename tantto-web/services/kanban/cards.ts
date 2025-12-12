@@ -4,7 +4,6 @@ import type {
   CompanyCardDetails,
   CreateCardInput,
   UpdateCardInput,
-  KanbanPriority,
 } from "@/types/kanban";
 
 /**
@@ -91,29 +90,21 @@ export async function updateCard(input: UpdateCardInput): Promise<CompanyCardDet
 /**
  * Moves a card to a different column.
  * This is a convenience wrapper around updateCard for drag-and-drop operations.
+ * Only sends the stepColumnId to update the card's column position.
  *
  * @param cardId - The ID of the card to move
  * @param targetColumnId - The ID of the target column
- * @param companyId - The company ID (required by the API)
  * @returns Promise<CompanyCardDetails> - The updated card
  */
 export async function moveCardToColumn(
   cardId: string,
   targetColumnId: string,
-  companyId: string,
-  name?: string,
-  description?: string,
-  priority?: KanbanPriority,
 ): Promise<CompanyCardDetails> {
-  return updateCard({
-
-    companyCardId: cardId,
-    companyId,
-    stepColumnId: targetColumnId,
-    name: name || "",
-    description: description || "",
-    priority: priority || "Média Prioridade",
-  });
+  const response = await api.patch<CompanyCardDetails>(
+    `/CompanyCard/update/${cardId}`,
+    { stepColumnId: targetColumnId }
+  );
+  return response.data;
 }
 
 /**

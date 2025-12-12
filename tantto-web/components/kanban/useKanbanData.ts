@@ -3,7 +3,6 @@ import {
   createCard,
   updateCard,
   deleteCard,
-  moveCardToColumn,
   getAllCompanies,
 } from "@/services/kanban";
 import type {
@@ -143,7 +142,6 @@ export function useKanbanData() {
     },
     onError: (error) => {
       handleMutationError(error, "Erro ao criar card. Tente novamente.", "create-card");
-      console.error("Failed to create card:", error);
     },
   });
 
@@ -160,28 +158,23 @@ export function useKanbanData() {
     },
     onError: (error) => {
       handleMutationError(error, "Erro ao atualizar card. Tente novamente.", "update-card");
-      console.error("Failed to update card:", error);
     },
   });
 
   /**
    * Moves a card to a different column.
+   * Uses the same payload structure as editCard for consistency.
    * Includes optimistic update for smooth drag-and-drop UX.
    */
   const moveCard = useMutation({
-    mutationFn: async ({
-      cardId,
-      targetColumnId,
-      companyId,
-    }: {
-      cardId: string;
-      targetColumnId: string;
-      companyId: string;
-    }) => {
-      return moveCardToColumn(cardId, targetColumnId, companyId);
+    mutationFn: async (input: UpdateCardInput) => {
+      const result = await updateCard(input);
+      return result;
     },
     // Optimistic update for immediate visual feedback
-    onMutate: async ({ cardId, targetColumnId }) => {
+    onMutate: async (input) => {
+      const { companyCardId: cardId, stepColumnId: targetColumnId } = input;
+
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
 
@@ -192,33 +185,43 @@ export function useKanbanData() {
 
       // Optimistically update
       if (previousColumns) {
-        const newColumns = previousColumns.map((column) => {
-          const card = column.cards.find((c) => c.id === cardId);
-          if (card) {
-            // Remove from current column
-            return {
-              ...column,
-              cards: column.cards.filter((c) => c.id !== cardId),
-            };
-          }
-          if (column.id === targetColumnId) {
-            // Find the card from any column and add to target
-            const movedCard = previousColumns
-              .flatMap((col) => col.cards)
-              .find((c) => c.id === cardId);
-            if (movedCard) {
+        // Find the card to move
+        const cardToMove = previousColumns
+          .flatMap((col) => col.cards)
+          .find((c) => c.id === cardId);
+
+        if (cardToMove) {
+          const newColumns = previousColumns.map((column) => {
+            // Remove card from all columns first
+            const cardsWithoutMoved = column.cards.filter((c) => c.id !== cardId);
+
+            // Add card only to target column
+            if (column.id === targetColumnId) {
               return {
                 ...column,
                 cards: [
-                  ...column.cards,
-                  { ...movedCard, stepColumnId: targetColumnId, column: column.name },
+                  ...cardsWithoutMoved,
+                  {
+                    ...cardToMove,
+                    stepColumnId: targetColumnId,
+                    column: column.name,
+                    // Update any other fields from the input
+                    ...(input.name && { name: input.name, title: input.name }),
+                    ...(input.description && { description: input.description }),
+                    ...(input.priority && { priority: input.priority }),
+                  },
                 ],
               };
             }
-          }
-          return column;
-        });
-        queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, newColumns);
+
+            // For other columns, just return without the moved card
+            return {
+              ...column,
+              cards: cardsWithoutMoved,
+            };
+          });
+          queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, newColumns);
+        }
       }
 
       return { previousColumns };
@@ -229,10 +232,6 @@ export function useKanbanData() {
         queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, context.previousColumns);
       }
       toastError("Erro ao mover card. Tente novamente.", "move-card");
-    },
-    onSettled: () => {
-      // Refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
     },
   });
 
