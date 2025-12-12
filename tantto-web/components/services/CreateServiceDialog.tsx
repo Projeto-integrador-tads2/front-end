@@ -9,40 +9,51 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "../ui/textarea";
-import { useForm } from "react-hook-form";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { ServiceFormValues, serviceFormSchema } from "@/validators/service-schema";
+import type { Service } from "@/types/service";
+
 
 export type CreateServiceDialogProps = {
+  /** Controls dialog visibility */
   open: boolean;
+  /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: ServiceFormValues & { files: File[] }) => void;
+  /** Callback when form is submitted */
+  onSubmit: (data: ServiceFormValues) => void;
+  /** Loading state for submit button */
   isSubmitting?: boolean;
-  isEditing?: boolean;
-  service?: ServiceFormValues | null;
+  /** Edit mode: existing service data to edit */
+  editService?: Service | null;
 };
 
+/**
+ * Dialog for creating or editing a service.
+ * Follows the existing design and Clients module patterns.
+ */
 export function CreateServiceDialog({
   open,
   onOpenChange,
   onSubmit,
   isSubmitting = false,
-  isEditing = false,
-  service = null,
+  editService,
 }: CreateServiceDialogProps) {
+  const isEditMode = !!editService;
+  const [files, setFiles] = useState<File[]>([]);
+
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
-      title: "",
-      contractTime: "",
+      name: "",
       description: "",
-      price: "",
+      contractDuration: 1,
+      value: 0,
+      servicePicture: null,
     },
   });
-
-  const [files, setFiles] = useState<File[]>([]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = e.target.files ? Array.from(e.target.files) : [];
@@ -55,32 +66,41 @@ export function CreateServiceDialog({
     setFiles((prev) => [...prev, ...list]);
   };
 
-  /** RESET AO ABRIR O MODAL */
+  // Reset form when dialog opens or edit service changes
   useEffect(() => {
     if (open) {
-      if (isEditing && service) {
-        form.reset(service);
+      if (editService) {
+        form.reset({
+          name: editService.name,
+          description: editService.description,
+          contractDuration: editService.contractDuration,
+          value: editService.value,
+          servicePicture: editService.servicePicture || null,
+        });
       } else {
         form.reset({
-          title: "",
-          contractTime: "",
+          name: "",
           description: "",
-          price: "",
+          contractDuration: 1,
+          value: 0,
+          servicePicture: null,
         });
       }
       setFiles([]);
     }
-  }, [open, service, isEditing, form]);
+  }, [open, editService, form]);
 
   const handleSubmit = (data: ServiceFormValues) => {
-    onSubmit({ ...data, files });
-    if (!isSubmitting) onOpenChange(false);
+    onSubmit(data);
+    if (!isSubmitting) {
+      onOpenChange(false);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="!max-w-3xl rounded-2xl p-0 overflow-hidden !bg-[#242d32] border-0 shadow-[0_4px_24px_rgba(0,0,0,0.18)]"
+        className="max-w-3xl! rounded-2xl p-0 overflow-hidden bg-sidebar border-0 shadow-[0_4px_24px_rgba(0,0,0,0.18)]"
         showCloseButton
       >
         <form
@@ -89,44 +109,52 @@ export function CreateServiceDialog({
           style={{ fontFamily: "var(--font-jakarta-sans, sans-serif)" }}
         >
           <DialogHeader className="px-6 pt-6">
-            <DialogTitle className="text-lg font-semibold text-white bg-[#34434c] rounded-full py-2.5 px-5">
-              {isEditing ? "Editar Serviço" : "Novo Serviço"}
+            <DialogTitle className="text-lg font-semibold text-white bg-card rounded-full py-2.5 px-5">
+              {isEditMode ? "Editar Serviço" : "Novo Serviço"}
             </DialogTitle>
           </DialogHeader>
 
           <div className="px-6 py-4">
-            <div className="grid grid-cols-2 gap-4 bg-[#34434c] rounded-3xl px-5 py-6">
+            <div className="grid grid-cols-2 gap-4 bg-card rounded-3xl px-5 py-6">
               {/* COLUNA ESQUERDA */}
               <div className="space-y-4 text-white">
                 {/* Nome */}
                 <div>
                   <label className="text-sm text-[#A3A6B1]">Serviço:</label>
                   <Input
-                    {...form.register("title")}
+                    {...form.register("name")}
                     placeholder="Nome do serviço"
-                    className="rounded-2xl !bg-[#242d32] text-white text-sm border-0 h-10 px-4"
+                    className="rounded-2xl bg-[#242d32]! text-white text-sm border-0 h-10 px-4"
                     autoFocus
                   />
-                  {form.formState.errors.title && (
+                  {form.formState.errors.name && (
                     <span className="text-xs text-destructive">
-                      {form.formState.errors.title.message}
+                      {form.formState.errors.name.message}
                     </span>
                   )}
                 </div>
 
-                {/* Tempo */}
+                {/* Tempo de Contrato */}
                 <div>
                   <label className="text-sm text-[#A3A6B1]">
-                    Tempo de Contrato:
+                    Tempo de Contrato (meses):
                   </label>
-                  <Input
-                    {...form.register("contractTime")}
-                    placeholder="Ex: 12 meses"
-                    className="rounded-2xl !bg-[#242d32] text-white text-sm border-0 h-10 px-4"
+                  <Controller
+                    name="contractDuration"
+                    control={form.control}
+                    render={({ field }) => (
+                      <Input
+                        type="number"
+                        placeholder="Ex: 12"
+                        value={field.value}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        className="rounded-2xl bg-[#242d32]! text-white text-sm border-0 h-10 px-4"
+                      />
+                    )}
                   />
-                  {form.formState.errors.contractTime && (
+                  {form.formState.errors.contractDuration && (
                     <span className="text-xs text-destructive">
-                      {form.formState.errors.contractTime.message}
+                      {form.formState.errors.contractDuration.message}
                     </span>
                   )}
                 </div>
@@ -138,7 +166,7 @@ export function CreateServiceDialog({
                     {...form.register("description")}
                     rows={5}
                     placeholder="Descrição detalhada..."
-                    className="rounded-2xl !bg-[#242d32] text-white text-sm border-0 px-4 py-3 resize-none"
+                    className="rounded-2xl bg-[#242d32]! text-white text-sm border-0 px-4 py-3 resize-none"
                   />
                   {form.formState.errors.description && (
                     <span className="text-xs text-destructive">
@@ -156,7 +184,7 @@ export function CreateServiceDialog({
                   <div
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={onDrop}
-                    className="mt-1 h-[140px] !bg-[#242d32] border-2 border-dashed border-[#49565e] rounded-3xl flex flex-col items-center justify-center text-sm text-[#A3A6B1]"
+                    className="mt-1 h-[140px] bg-[#242d32] border-2 border-dashed border-transparent rounded-3xl flex flex-col items-center justify-center text-sm text-[#A3A6B1]"
                   >
                     <p>Arraste os arquivos ou clique</p>
 
@@ -169,7 +197,7 @@ export function CreateServiceDialog({
                     />
                     <label
                       htmlFor="file"
-                      className="cursor-pointer text-xs text-white bg-[#1F6B3B] px-3 py-1 rounded-2xl mt-2"
+                      className="cursor-pointer text-xs text-white bg-primary px-3 py-1 rounded-2xl mt-2"
                     >
                       Selecionar
                     </label>
@@ -180,7 +208,7 @@ export function CreateServiceDialog({
                       {files.map((f, i) => (
                         <div
                           key={i}
-                          className="px-3 py-1 bg-[#1F2937] text-xs rounded text-white"
+                          className="px-3 py-1 bg-muted text-xs rounded text-white"
                         >
                           {f.name}
                         </div>
@@ -189,17 +217,25 @@ export function CreateServiceDialog({
                   )}
                 </div>
 
-                {/* Preço */}
+                {/* Valor */}
                 <div>
-                  <label className="text-sm text-[#A3A6B1]">Valor:</label>
-                  <Input
-                    {...form.register("price")}
-                    placeholder="R$ 0,00"
-                    className="rounded-2xl !bg-[#242d32] text-white text-sm border-0 h-10 px-4"
+                  <label className="text-sm text-[#A3A6B1]">Valor (R$):</label>
+                  <Controller
+                    name="value"
+                    control={form.control}
+                    render={({ field }) => (
+                      <Input
+                        type="text"
+                        placeholder="0,00"
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="rounded-2xl bg-[#242d32]! text-white text-sm border-0 h-10 px-4"
+                      />
+                    )}
                   />
-                  {form.formState.errors.price && (
+                  {form.formState.errors.value && (
                     <span className="text-xs text-destructive">
-                      {form.formState.errors.price.message}
+                      {form.formState.errors.value.message}
                     </span>
                   )}
                 </div>
@@ -212,7 +248,7 @@ export function CreateServiceDialog({
               type="button"
               variant="secondary"
               onClick={() => onOpenChange(false)}
-              className="flex-1 max-w-24 rounded-lg !bg-[#242d32] text-white hover:bg-[#363A46] border-0"
+              className="flex-1 max-w-24 rounded-lg bg-[#242d32] text-white hover:bg-[#363A46] border-0"
             >
               Cancelar
             </Button>
@@ -220,13 +256,13 @@ export function CreateServiceDialog({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 max-w-24 rounded-lg bg-primary text-white hover:bg-[#15803d]"
+              className="flex-1 max-w-24 rounded-lg bg-[#16a34a] text-white hover:bg-[#15803d]"
             >
               {isSubmitting
                 ? "Salvando..."
-                : isEditing
-                ? "Salvar Alterações"
-                : "Salvar"}
+                : isEditMode
+                ? "Salvar"
+                : "Criar"}
             </Button>
           </DialogFooter>
         </form>

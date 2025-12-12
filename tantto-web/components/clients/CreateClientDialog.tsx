@@ -24,6 +24,7 @@ import {
   type ClientFormValues,
 } from "@/validators/client-schema";
 import type { CompanyDto } from "@/types/kanban";
+import type { Client } from "@/types/client";
 import { useState } from "react";
 
 export type CreateClientDialogProps = {
@@ -37,6 +38,8 @@ export type CreateClientDialogProps = {
   companies?: CompanyDto[];
   /** Loading state for submit button */
   isSubmitting?: boolean;
+  /** Client to edit (if in edit mode) */
+  editClient?: Client | null;
 };
 
 /**
@@ -49,7 +52,9 @@ export function CreateClientDialog({
   onSubmit,
   companies = [],
   isSubmitting = false,
+  editClient = null,
 }: CreateClientDialogProps) {
+  const isEditMode = !!editClient;
   const form = useForm<ClientFormValues>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: {
@@ -70,14 +75,23 @@ export function CreateClientDialog({
   // Reset form when dialog opens
   useEffect(() => {
     if (open) {
-      form.reset({
-        name: "",
-        email: "",
-        phone: "",
-        companyId: companies[0]?.companyId || "",
-      });
+      if (editClient) {
+        form.reset({
+          name: editClient.name,
+          email: editClient.email,
+          phone: editClient.phone,
+          companyId: editClient.companyId || "",
+        });
+      } else {
+        form.reset({
+          name: "",
+          email: "",
+          phone: "",
+          companyId: companies[0]?.companyId || "",
+        });
+      }
     }
-  }, [open, form, companies]);
+  }, [open, form, companies, editClient]);
 
   const handleSubmit = (data: ClientFormValues) => {
     onSubmit(data);
@@ -108,7 +122,7 @@ export function CreateClientDialog({
           {/* Title Input */}
           <DialogHeader className="px-6 pt-6">
             <DialogTitle className="text-lg font-semibold text-white bg-[#34434c] rounded-full py-2.5 px-5">
-              Cliente
+              {isEditMode ? "Editar Cliente" : "Cliente"}
             </DialogTitle>
           </DialogHeader>
 
