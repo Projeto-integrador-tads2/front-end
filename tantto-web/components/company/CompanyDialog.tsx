@@ -217,16 +217,20 @@ export default function CompanyDialog({
                   )}
                 </div>
 
-                <div>
-                  <label className="text-xs text-white font-medium">Setor *</label>
+               {/* SETOR */}
+               <div>
+                  <label className="text-xs text-white font-medium block">
+                    Setor <span className="text-red-500">*</span>
+                  </label>
                   <Select
                     value={watch("sector")}
                     onValueChange={(value) => setValue("sector", value)}
                   >
-                    <SelectTrigger className="mt-1 !bg-[#242d32] text-white border-0 h-10">
+                    {/* Adicionei 'text-sm' aqui para alinhar com os Inputs */}
+                    <SelectTrigger className="mt-1 !bg-[#242d32] text-white text-sm rounded-2xl border-0 h-10 w-83">
                       <SelectValue placeholder="Selecione um setor" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#242d32] text-white border-[#363A46]">
+                    <SelectContent className="bg-[#242d32] text-white border-[#363A46] rounded-2xl">
                       <SelectItem value="Comércio">Comércio</SelectItem>
                       <SelectItem value="Educação">Educação</SelectItem>
                       <SelectItem value="Indústria">Indústria</SelectItem>
