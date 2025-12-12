@@ -55,6 +55,21 @@ export function CreateServiceDialog({
     },
   });
 
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
+  const parseCurrency = (value: string): number => {
+    const numericValue = value
+      .replace(/R\$\s?/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
+    return parseFloat(numericValue) || 0;
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = e.target.files ? Array.from(e.target.files) : [];
     setFiles((prev) => [...prev, ...list]);
@@ -219,16 +234,20 @@ export function CreateServiceDialog({
 
                 {/* Valor */}
                 <div>
-                  <label className="text-sm text-[#A3A6B1]">Valor (R$):</label>
+                  <label className="text-sm text-[#A3A6B1]">Valor:</label>
                   <Controller
                     name="value"
                     control={form.control}
                     render={({ field }) => (
                       <Input
                         type="text"
-                        placeholder="0,00"
-                        value={field.value}
-                        onChange={field.onChange}
+                        placeholder="R$ 0,00"
+                        value={formatCurrency(field.value)}
+                        onChange={(e) => {
+                          const numericValue = parseCurrency(e.target.value);
+                          field.onChange(numericValue);
+                        }}
+                        onBlur={field.onBlur}
                         className="rounded-2xl bg-[#242d32]! text-white text-sm border-0 h-10 px-4"
                       />
                     )}
