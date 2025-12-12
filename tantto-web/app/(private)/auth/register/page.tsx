@@ -11,35 +11,13 @@ import { registerUser } from "@/services/auth/register";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { handleMutationSuccess } from "@/lib/toast-utils";
 
 export default function RegisterPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Proteção: redireciona para login se não estiver autenticado
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/login");
-    }
-  }, [status, router]);
-
-  // Enquanto carrega a sessão
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#34393d]">
-        <p className="text-white text-xl">Carregando...</p>
-      </div>
-    );
-  }
-
-  // Se não tiver sessão (não logado)
-  if (!session) {
-    return null;
-  }
 
   const {
     register,
@@ -59,28 +37,22 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterData) => {
-    console.log("📝 Dados do formulário:", data);
-    
     setIsLoading(true);
     try {
-      console.log("🚀 Enviando requisição para API...");
-      const response = await registerUser(data);
-      console.log("✅ Resposta da API:", response);
-      
-      if (response.success) {
-        console.log("🎉 Usuário criado com sucesso!");
-        alert("Usuário criado com sucesso!"); // ou use toast
-        router.push("/servicos"); // ← mude pra página que quiser (dashboard, clientes, etc.)
+      const { response, success} = await registerUser(data);
+
+      if (success) {
+        handleMutationSuccess(response, "Usuário criado com sucesso!", "register-user");
+        router.push("/servicos");
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("❌ Erro ao cadastrar:", error);
       setError("root", {
         type: "manual",
         message: error.message || "Erro ao cadastrar usuário",
       });
     } finally {
       setIsLoading(false);
-      console.log("⏹️ Requisição finalizada");
     }
   };
 
