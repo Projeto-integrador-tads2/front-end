@@ -1,43 +1,53 @@
-//Post
-export interface CreateServiceResponse{
-    serviceId: string;
-    name: string;
-    description: string;
-    contractDuration: number;
-    value: number;
-    servicePicture?:string | null;
-    message:string;
+/**
+ * Service types for the front-end application.
+ * Maps to the backend ServiceDto and related DTOs.
+ */
+
+/**
+ * Represents a service as returned from the API.
+ * Maps to ServiceDto in the backend.
+ */
+export interface Service {
+  id: string;
+  name: string;
+  description: string;
+  contractDuration: number;
+  value: number;
+  servicePicture?: string | null;
 }
 
-export interface CreateServiceRequest{
-    name: string;
-    description: string;
-    contractDuration: number;
-    value: number;
-    servicePicture?:string | null;
+/**
+ * DTO for creating a new service.
+ * Maps to RegisterServiceDto in the backend.
+ */
+export interface CreateServiceDto {
+  name: string;
+  description: string;
+  contractDuration: number;
+  value: number;
+  servicePicture?: string | null;
 }
 
-// Get
-
-export interface Service{
-    id: string;
-    name: string;
-    description: string;
-    contractDuration: number;
-    value: number;
-    servicePicture?: string | null;
+/**
+ * DTO for updating an existing service.
+ * Maps to UpdateServiceDto in the backend.
+ */
+export interface UpdateServiceDto {
+  name: string;
+  description: string;
+  contractDuration: number;
+  value: number;
+  servicePicture?: string | null;
 }
 
-export type ServicesListResponse = Service[]
+/**
+ * Input type for creating a new service (used in mutations).
+ */
+export type CreateServiceInput = CreateServiceDto;
 
-export type UpdateServiceRequest = Partial<CreateServiceRequest>;
-
-export interface UpdateServiceResponse{
-    serviceId: string;
-    message: string;
-}
-
-export interface DeleteServiceResponse{
-    success: boolean;
-    message: string;
-}
+/**
+ * Input type for updating an existing service (used in mutations).
+ */
+export type UpdateServiceInput = UpdateServiceDto & {
+  serviceId: string;
+};

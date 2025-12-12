@@ -7,9 +7,6 @@ import {
   Trash2,
   X,
   Pencil,
-  Mail,
-  Phone,
-  Building2,
 } from "lucide-react";
 import { useClientsData } from "@/components/clients/useClientsData";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
@@ -70,7 +67,7 @@ export default function ClientesPage() {
     if (!clientBeingEdited) return;
 
     updateClientMutation.mutate(
-      { id: clientBeingEdited.id, ...data },
+      { clientId: clientBeingEdited.id, data },
       {
         onSuccess: () => {
           setIsClientDialogOpen(false);
@@ -118,7 +115,7 @@ export default function ClientesPage() {
           </div>
 
           <Button
-            className="bg-primary text-white font-bold px-7 py-2 text-[16px] !rounded-full hover:bg-[#16a34a]"
+            className="bg-primary text-white font-bold px-7 py-2 text-[16px] rounded-full! hover:bg-[#16a34a]"
             onClick={() => {
               setClientBeingEdited(null);
               setIsClientDialogOpen(true);
@@ -276,16 +273,7 @@ export default function ClientesPage() {
         isSubmitting={
           createClientMutation.isPending || updateClientMutation.isPending
         }
-        defaultValues={
-          clientBeingEdited
-            ? {
-                name: clientBeingEdited.name,
-                email: clientBeingEdited.email,
-                phone: clientBeingEdited.phone,
-                companyId: clientBeingEdited.companyId ?? "",
-              }
-            : undefined
-        }
+        editClient={clientBeingEdited}
       />
 
       {/* DELETE CONFIRM */}
@@ -295,7 +283,6 @@ export default function ClientesPage() {
         title="Excluir Cliente"
         description={`Deseja excluir ${clientToDelete?.name}?`}
         onConfirm={handleDeleteClient}
-        isLoading={deleteClientMutation.isPending}
       />
     </div>
   );
