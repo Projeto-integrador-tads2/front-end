@@ -16,12 +16,14 @@ export interface CreateCompanyRequest{
   companyPicture?: string | null;
 }
 
-// Get
+// Get 
 
 export interface Company{
   companyId: string;
   name: string;
   cnpj: string;
+  representativeName: string;
+  createdAt: string;
   sector?: string;
   companyPicture?: string | null;
 }

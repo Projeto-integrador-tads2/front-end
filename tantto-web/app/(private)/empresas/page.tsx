@@ -18,6 +18,8 @@ export type Company = CompanyFormValues & {
   avatar?: string;
   companyId?: string;
   sector?: string;
+  representativeName?: string;
+  createdAt?: string;
 };
 
 export default function EmpresaKanbanPage() {
@@ -43,10 +45,10 @@ export default function EmpresaKanbanPage() {
 
         const mappedCompanies: Company[] = data.map((company) => ({
           legalName: company.name,
-          representative: "",
+          representativeName: company.representativeName || "",
           cnpj: company.cnpj,
           sector: company.sector || "",
-          createdAt: "",
+          createdAt: company.createdAt || "",
           id: company.companyId || company.name,
           companyId: company.companyId,
           avatar:
@@ -112,7 +114,7 @@ export default function EmpresaKanbanPage() {
                 ? {
                     ...c,
                     legalName: data.legalName,
-                    representative: data.representative,
+                    representativeName: data.representativeName,
                     cnpj: data.cnpj,
                     sector: data.sector,
                     createdAt: data.createdAt,
@@ -133,7 +135,7 @@ export default function EmpresaKanbanPage() {
 
           const newCompany: Company = {
             legalName: response.name,
-            representative: data.representative,
+            representativeName: data.representativeName,
             cnpj: response.cnpj,
             sector: data.sector,
             createdAt: data.createdAt || new Date().toISOString(),
@@ -179,10 +181,11 @@ export default function EmpresaKanbanPage() {
   const filteredCompanies = companies.filter(
     (company) =>
       company.legalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.representative.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.representativeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       company.cnpj.includes(searchTerm)
   );
 
+  console.log("Rendered with companies:", selectedCompany);
   return (
     <div className="min-h-screen bg-background">
       <div>
@@ -321,7 +324,7 @@ export default function EmpresaKanbanPage() {
                     {selectedCompany.legalName}
                   </h2>
                   <p className="text-xs text-[#A3A6B1]">
-                    {selectedCompany.representative}
+                    {selectedCompany.representativeName}
                   </p>
                 </div>
               </div>
@@ -345,7 +348,7 @@ export default function EmpresaKanbanPage() {
                   Cliente Representante
                 </p>
                 <p className="text-sm text-white font-medium">
-                  {selectedCompany.representative}
+                  {selectedCompany.representativeName}
                 </p>
               </div>
               <div>

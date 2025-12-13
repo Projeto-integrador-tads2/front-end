@@ -30,7 +30,7 @@ const formatCNPJ = (value: string): string => {
 
 export type CompanyFormValues = {
   legalName: string;
-  representative: string;
+  representativeName: string;
   cnpj: string;
   sector: string;
   createdAt: string;
@@ -61,7 +61,7 @@ export default function CompanyDialog({
   } = useForm<CompanyFormValues>({
     defaultValues: {
       legalName: "",
-      representative: "",
+      representativeName: "",
       cnpj: "",
       sector: "",
       createdAt: "",
@@ -173,7 +173,7 @@ export default function CompanyDialog({
                     Cliente Representante
                   </label>
                   <Input
-                    {...register("representative", {
+                    {...register("representativeName", {
                       required: "Cliente Representante é obrigatório",
                       minLength: {
                         value: 3,
@@ -182,12 +182,12 @@ export default function CompanyDialog({
                     })}
                     placeholder="Digite o nome.."
                     className={`mt-1 !bg-[#242d32] text-white border-0 ${
-                      errors.representative ? "!border-red-500 !border" : ""
+                      errors.representativeName ? "!border-red-500 !border" : ""
                     }`}
                   />
-                  {errors.representative && (
+                  {errors.representativeName && (
                     <p className="text-xs text-red-400 mt-1">
-                      {errors.representative.message}
+                      {errors.representativeName.message}
                     </p>
                   )}
                 </div>
