@@ -1,11 +1,13 @@
 import axios from "axios";
 import { getServerSession } from "next-auth";
 import { getSession, signOut } from "next-auth/react";
-
-import nextAuthOptions from "@/config/auth";
+import nextAuthOptions from "@/config/auth"; // ajuste o caminho se necessário
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5135/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.request.use(async (request) => {
@@ -13,14 +15,12 @@ api.interceptors.request.use(async (request) => {
 
   if (isServer) {
     const session = await getServerSession(nextAuthOptions);
-
-    if (session) {
+    if (session?.token) {
       request.headers.Authorization = `Bearer ${session.token}`;
     }
   } else {
     const session = await getSession();
-
-    if (session) {
+    if (session?.token) {
       request.headers.Authorization = `Bearer ${session.token}`;
     }
   }
@@ -29,16 +29,13 @@ api.interceptors.request.use(async (request) => {
 });
 
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error?.response?.status === 401 && typeof window !== "undefined") {
       signOut({ callbackUrl: "/" });
     }
-
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

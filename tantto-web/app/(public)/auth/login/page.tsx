@@ -104,15 +104,6 @@ export default function LoginPage() {
                 onEndContentClick={() => setShowPassword(!showPassword)}
               />
             </div>
-            <div className="w-full text-center">
-              <Link
-                href="#"
-                className="text-xs text-[#bfc8d0] hover:underline"
-                tabIndex={0}
-              >
-                Esqueceu sua senha?
-              </Link>
-            </div>
             <Button type="submit" disabled={!isValid}>
               ENTRAR
             </Button>
@@ -120,12 +111,12 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <span className="text-[#bfc8d0] text-sm">
               Não tem uma conta?{" "}
-              <a
-                href="#"
+              <Link
+                href="/auth/register"
                 className="text-[#21c45d] font-semibold hover:underline"
               >
                 Cadastre-se
-              </a>
+              </Link>
             </span>
           </div>
         </div>
