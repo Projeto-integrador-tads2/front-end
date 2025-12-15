@@ -81,7 +81,7 @@ export const KanbanBoard = ({ id, children, className }: KanbanBoardProps) => {
       )}
       style={{
         minWidth: 320,
-        flexShrink: 0, // Prevent columns from shrinking
+        flexShrink: 0, 
       }}
       ref={setNodeRef}
     >

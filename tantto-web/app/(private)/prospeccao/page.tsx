@@ -27,9 +27,7 @@ import type {
   KanbanCard as KanbanCardType,
 } from "@/types/kanban";
 
-// -----------------------------
-// Dialog State Types
-// -----------------------------
+
 type CardDialogState = {
   isOpen: boolean;
   columnId: string;
@@ -37,16 +35,12 @@ type CardDialogState = {
 };
 
 
-// Tipo para controlar o delete unificado
 type DeleteDialogState = {
   isOpen: boolean;
   type: 'card' | 'column' | null;
   id: string | null;
 };
 
-// -----------------------------
-// Page Component
-// -----------------------------
 export default function EmpresasKanbanPage() {
   const {
     columns,
@@ -64,29 +58,20 @@ export default function EmpresasKanbanPage() {
 
   } = useKanbanData();
 
-  // ------------------------------------
-  // Dialog State
-  // ------------------------------------
   const [cardDialog, setCardDialog] = useState<CardDialogState>({
     isOpen: false,
     columnId: "",
     editCard: null,
   });
 
-  // Track original column before drag starts
   const [draggedCardOriginalColumn, setDraggedCardOriginalColumn] = useState<string | null>(null);
 
-
-  // 👇 CORREÇÃO: Estado unificado para exclusão (Card ou Coluna)
   const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
     isOpen: false,
     type: null,
     id: null,
   });
 
-  // ------------------------------------
-  // Card Handlers
-  // ------------------------------------
   const handleOpenAddCard = useCallback((columnId: string) => {
     setCardDialog({ isOpen: true, columnId, editCard: null });
   }, []);
@@ -99,7 +84,6 @@ export default function EmpresasKanbanPage() {
     });
   }, []);
 
-  // Abre modal para deletar Card
   const handleDeleteCard = useCallback((cardId: string) => {
     setDeleteDialog({ isOpen: true, type: 'card', id: cardId });
   }, []);
@@ -130,9 +114,6 @@ export default function EmpresasKanbanPage() {
     [cardDialog.editCard, addCard, editCard]
   );
 
-  // ------------------------------------
-  // Delete Handler Unificado
-  // ------------------------------------
   const confirmDelete = useCallback(() => {
     const { type, id } = deleteDialog;
     if (id && type === 'card') {
@@ -141,10 +122,6 @@ export default function EmpresasKanbanPage() {
     setDeleteDialog({ isOpen: false, type: null, id: null });
   }, [deleteDialog, removeCard]);
 
-
-  // ------------------------------------
-  // Drag & Drop Handlers
-  // ------------------------------------
   const handleDragStart = useCallback(
     (event: { active: { id: string | number } }) => {
       const card = allCards.find((c) => c.id === event.active.id);
@@ -171,7 +148,6 @@ export default function EmpresasKanbanPage() {
         return;
       }
 
-      // Determine target column: either the column itself or the column of the card we're hovering over
       const targetColumnId =
         columns.find((col) => col.id === over.id)?.id ||
         allCards.find((c) => c.id === over.id)?.stepColumnId;
@@ -182,7 +158,6 @@ export default function EmpresasKanbanPage() {
         return;
       }
 
-      // Call API to update the card's column with complete payload (same as dialog)
       moveCard.mutate({
         companyCardId: draggedCard.id,
         name: draggedCard.name || "",
@@ -192,15 +167,11 @@ export default function EmpresasKanbanPage() {
         stepColumnId: targetColumnId,
       });
 
-      // Reset tracking
       setDraggedCardOriginalColumn(null);
     },
     [allCards, columns, moveCard, draggedCardOriginalColumn]
   );
 
-  // ------------------------------------
-  // Render
-  // ------------------------------------
   return (
     <div className="min-h-screen bg-background px-0 py-0">
       {/* Header */}
@@ -230,10 +201,8 @@ export default function EmpresasKanbanPage() {
         </div>
       </div>
 
-      {/* Header Spacer */}
       <div className="h-24" />
 
-      {/* Kanban */}
       <div className="px-4 py-6 w-full overflow-x-auto">
         <AsyncBoundary
           isLoading={isLoadingColumns}
@@ -282,7 +251,6 @@ export default function EmpresasKanbanPage() {
         </AsyncBoundary>
       </div>
 
-      {/* Card Dialog */}
       <KanbanCardDialog
         open={cardDialog.isOpen}
         onOpenChange={(open) =>
@@ -296,7 +264,6 @@ export default function EmpresasKanbanPage() {
         isSubmitting={addCard.isPending || editCard.isPending}
       />
 
-      {/* Confirm Dialog (Unificado e Dinâmico) */}
       <ConfirmDialog
         open={deleteDialog.isOpen}
         onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, isOpen: open }))}

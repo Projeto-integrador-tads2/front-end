@@ -4,10 +4,7 @@ import { Plus, Pencil, Trash2, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-/**
- * Fallback color mappings for common column names.
- * Used when column.color is not set.
- */
+
 const fallbackColors: Record<string, { bg: string; icon: string }> = {
   "Análise de Perfil": { bg: "bg-chart-2", icon: "text-chart-2" },
   "Conversa com o Cliente": { bg: "bg-chart-1", icon: "text-chart-1" },
@@ -17,13 +14,9 @@ const fallbackColors: Record<string, { bg: string; icon: string }> = {
 };
 
 export type KanbanColumnHeaderProps = {
-  /** Column data including name, color, and cards */
   column: KanbanColumn;
-  /** Callback when add card button is clicked */
   onAddCard: () => void;
-  /** Callback when edit column is requested */
   onEditColumn?: (column: KanbanColumn) => void;
-  /** Whether actions are disabled */
   disabled?: boolean;
 };
 
@@ -53,7 +46,6 @@ export function KanbanColumnHeader({
       style={column.color ? { backgroundColor: column.color } : undefined}
     >
       <div className="flex items-center gap-2">
-        {/* Card Count Badge */}
         <span
           className={cn(
             "flex items-center justify-center rounded-3xl text-[15px] font-bold shadow-sm w-12 h-9 bg-white",
@@ -63,15 +55,12 @@ export function KanbanColumnHeader({
         >
           {cardCount}
         </span>
-
-        {/* Column Name */}
         <span className="font-bold text-[16px] px-3 py-1 rounded-xl text-white bg-transparent font-jakarta-sans">
           {column.name}
         </span>
       </div>
 
       <div className="flex items-center gap-1">
-        {/* Column Actions Menu */}
         {onEditColumn && (
           <div className="relative">
             <Button
@@ -90,7 +79,6 @@ export function KanbanColumnHeader({
               <MoreVertical className="w-4 h-4" />
             </Button>
 
-            {/* Dropdown Menu */}
             {showMenu && (
               <div
                 className="absolute right-0 top-full mt-1 z-50 bg-[#23262F] rounded-lg shadow-lg border border-[#292C36] py-1 min-w-[120px]"
@@ -108,7 +96,6 @@ export function KanbanColumnHeader({
           </div>
         )}
 
-        {/* Add Card Button */}
         <Button
           size="icon"
           variant="ghost"

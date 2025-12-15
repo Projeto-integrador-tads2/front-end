@@ -86,7 +86,6 @@ export function KanbanCardItem({
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      {/* Botões de Ação (Editar / Excluir) */}
       {(onEdit || onDelete) && (
         <div
           className={cn(
@@ -95,7 +94,7 @@ export function KanbanCardItem({
           )}
           onPointerDown={stopPropagation}
           onMouseDown={stopPropagation}
-          onClick={stopPropagation} // Garante que o clique não vaze
+          onClick={stopPropagation} 
         >
           {onEdit && (
             <Button
@@ -118,7 +117,7 @@ export function KanbanCardItem({
               className="h-7 w-7 rounded-lg bg-[#292C36] hover:bg-red-500/20 text-[#A3A6B1] hover:text-red-500"
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(card.id); // Apenas avisa o pai
+                onDelete(card.id); 
               }}
               disabled={disabled}
             >
@@ -128,7 +127,6 @@ export function KanbanCardItem({
         </div>
       )}
 
-      {/* Badge de Prioridade */}
       <div className="flex items-center gap-2 mb-1">
         <Badge
           className={cn(
@@ -142,7 +140,6 @@ export function KanbanCardItem({
         </Badge>
       </div>
 
-      {/* Título e Descrição */}
       <div className="font-bold text-[16px] text-white leading-tight mb-0.5 pr-16">
         {card.name || "Sem título"}
       </div>
@@ -150,7 +147,6 @@ export function KanbanCardItem({
         {card.description || `Empresa: ${card.companyName || "N/A"}`}
       </div>
 
-      {/* Avatares */}
       {(card.userName || (card.avatars && card.avatars.length > 0)) && (
         <div className="flex items-center gap-2 mt-auto">
           {card.avatars?.length ? (
@@ -180,7 +176,6 @@ export function KanbanCardItem({
         </div>
       )}
 
-      {/* Botão de Previsão de Fechamento */}
       <div className="mt-3 pt-2 border-t border-[#292C36]">
         <Button
           variant="outline"

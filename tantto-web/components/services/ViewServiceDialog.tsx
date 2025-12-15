@@ -10,17 +10,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Service } from "@/types/service";
 
 export type ViewServiceDialogProps = {
-  /** Controls dialog visibility */
   open: boolean;
-  /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
-  /** Service data to display */
   service: Service | null;
 };
 
-/**
- * Dialog for viewing service details in read-only mode.
- */
+
 export function ViewServiceDialog({
   open,
   onOpenChange,
@@ -59,7 +54,6 @@ export function ViewServiceDialog({
 
         <div className="px-6 py-4">
           <div className="bg-[#34434c] rounded-3xl px-6 py-6 space-y-4">
-            {/* Avatar and Name */}
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16 bg-[#242d32]">
                 <AvatarFallback className="text-white text-lg bg-[#1F6B3B]">
@@ -73,7 +67,6 @@ export function ViewServiceDialog({
               </div>
             </div>
 
-            {/* Service Details */}
             <div className="space-y-3 pt-2">
               <div>
                 <label className="text-sm text-[#A3A6B1] font-medium">

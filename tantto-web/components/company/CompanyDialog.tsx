@@ -17,7 +17,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 
-// Format CNPJ: XX.XXX.XXX/XXXX-XX
+// Formato CNPJ: XX.XXX.XXX/XXXX-XX
 const formatCNPJ = (value: string): string => {
   return value
     .replace(/\D/g, "")
@@ -217,7 +217,6 @@ export default function CompanyDialog({
                   )}
                 </div>
 
-               {/* SETOR */}
                <div>
                   <label className="text-xs text-white font-medium block">
                     Setor <span className="text-red-500">*</span>
@@ -226,7 +225,6 @@ export default function CompanyDialog({
                     value={watch("sector")}
                     onValueChange={(value) => setValue("sector", value)}
                   >
-                    {/* Adicionei 'text-sm' aqui para alinhar com os Inputs */}
                     <SelectTrigger className="mt-1 !bg-[#242d32] text-white text-sm rounded-2xl border-0 h-10 w-83">
                       <SelectValue placeholder="Selecione um setor" />
                     </SelectTrigger>

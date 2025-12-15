@@ -45,7 +45,6 @@ export default function RegisterPage() {
         handleMutationSuccess(response, "Usuário criado com sucesso!", "register-user");
         router.push("/servicos");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError("root", {
         type: "manual",

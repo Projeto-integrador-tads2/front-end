@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-/**
- * Validações para criação/edição de Company usadas com react-hook-form 
- */
 export const companySchema = z.object({
   legalName: z.string().min(3, "Razão Social deve ter pelo menos 3 caracteres"),
   representativeName: z

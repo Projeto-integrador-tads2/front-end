@@ -14,7 +14,6 @@ import {
   handleMutationError,
 } from "@/lib/toast-utils";
 
-/** Query keys for client cache management */
 export const CLIENT_QUERY_KEYS = {
   all: ["clients"] as const,
   byId: (id: string) => ["clients", id] as const,
@@ -38,13 +37,6 @@ export const CLIENT_QUERY_KEYS = {
 export function useClientsData() {
   const queryClient = useQueryClient();
 
-  // ============================================
-  // QUERIES
-  // ============================================
-
-  /**
-   * Fetches all clients.
-   */
   const {
     data: clients = [],
     isLoading: isLoadingClients,
@@ -55,13 +47,10 @@ export function useClientsData() {
   } = useQuery<Client[]>({
     queryKey: CLIENT_QUERY_KEYS.all,
     queryFn: getAllClients,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2, 
     refetchOnWindowFocus: true,
   });
 
-  /**
-   * Fetches all companies for the select dropdown.
-   */
   const {
     data: companies = [],
     isLoading: isLoadingCompanies,
@@ -69,16 +58,9 @@ export function useClientsData() {
   } = useQuery<CompanyDto[]>({
     queryKey: CLIENT_QUERY_KEYS.companies,
     queryFn: getAllCompanies,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5, 
   });
 
-  // ============================================
-  // MUTATIONS
-  // ============================================
-
-  /**
-   * Creates a new client.
-   */
   const createClientMutation = useMutation({
     mutationFn: async (data: CreateClientDto) => {
       return createClient(data);
@@ -93,9 +75,6 @@ export function useClientsData() {
     },
   });
 
-  /**
-   * Updates an existing client.
-   */
   const updateClientMutation = useMutation({
     mutationFn: async ({
       clientId,
@@ -116,9 +95,6 @@ export function useClientsData() {
     },
   });
 
-  /**
-   * Deletes a client.
-   */
   const deleteClientMutation = useMutation({
     mutationFn: async (clientId: string) => {
       return deleteClient(clientId);
@@ -134,24 +110,19 @@ export function useClientsData() {
   });
 
   return {
-    // Data
     clients,
     companies,
 
-    // Loading states
     isLoadingClients,
     isFetchingClients,
     isLoadingCompanies,
 
-    // Error states
     isErrorClients,
     isErrorCompanies,
     clientsError,
 
-    // Actions
     refetchClients,
 
-    // Mutations
     createClientMutation,
     updateClientMutation,
     deleteClientMutation,

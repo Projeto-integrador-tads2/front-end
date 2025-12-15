@@ -5,17 +5,12 @@ import { ChevronDown } from "lucide-react";
 import type { Client } from "@/types/client";
 
 export type ClientListItemProps = {
-  /** The client data to display */
   client: Client;
-  /** Callback when the item is clicked */
   onClick?: (client: Client) => void;
-  /** Whether this item is expanded/selected */
   isExpanded?: boolean;
 };
 
-/**
- * Gets initials from a name string.
- */
+
 function getInitials(name: string): string {
   if (!name) return "?";
   const parts = name.trim().split(" ");
@@ -23,10 +18,6 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-/**
- * A single client item in the list.
- * Displays avatar, name, and an expandable chevron.
- */
 export function ClientListItem({
   client,
   onClick,

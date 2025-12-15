@@ -1,7 +1,6 @@
 import { toast } from "sonner";
 import type { AxiosError } from "axios";
 
-/** Default duration for toasts */
 const TOAST_DURATION = {
   success: 3000,
   info: 3000,
@@ -9,7 +8,6 @@ const TOAST_DURATION = {
   error: 5000,
 } as const;
 
-/** API error response type */
 interface ApiErrorResponse {
   message?: string;
   error?: string;
@@ -30,16 +28,13 @@ export function getApiErrorMessage(
 ): string {
   if (!error) return fallbackMessage;
 
-  // Check if it's an Axios error
   const axiosError = error as AxiosError<ApiErrorResponse>;
 
-  // Try to get the message from the API response
   const apiMessage =
     axiosError?.response?.data?.message || axiosError?.response?.data?.error;
 
   if (apiMessage) return apiMessage;
 
-  // Map status codes to user-friendly messages
   const status = axiosError?.response?.status;
 
   switch (status) {
@@ -61,7 +56,6 @@ export function getApiErrorMessage(
     case 504:
       return "Erro no servidor. Tente novamente mais tarde.";
     default:
-      // Try to get a generic error message
       if (error instanceof Error) {
         return error.message || fallbackMessage;
       }

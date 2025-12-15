@@ -18,22 +18,14 @@ import type { Service } from "@/types/service";
 
 
 export type CreateServiceDialogProps = {
-  /** Controls dialog visibility */
   open: boolean;
-  /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
-  /** Callback when form is submitted */
   onSubmit: (data: ServiceFormValues) => void;
-  /** Loading state for submit button */
   isSubmitting?: boolean;
-  /** Edit mode: existing service data to edit */
   editService?: Service | null;
 };
 
-/**
- * Dialog for creating or editing a service.
- * Follows the existing design and Clients module patterns.
- */
+
 export function CreateServiceDialog({
   open,
   onOpenChange,
@@ -81,7 +73,6 @@ export function CreateServiceDialog({
     setFiles((prev) => [...prev, ...list]);
   };
 
-  // Reset form when dialog opens or edit service changes
   useEffect(() => {
     if (open) {
       if (editService) {
@@ -131,9 +122,7 @@ export function CreateServiceDialog({
 
           <div className="px-6 py-4">
             <div className="grid grid-cols-2 gap-4 bg-card rounded-3xl px-5 py-6">
-              {/* COLUNA ESQUERDA */}
               <div className="space-y-4 text-white">
-                {/* Nome */}
                 <div>
                   <label className="text-sm text-[#A3A6B1]">Serviço:</label>
                   <Input
@@ -149,7 +138,6 @@ export function CreateServiceDialog({
                   )}
                 </div>
 
-                {/* Tempo de Contrato */}
                 <div>
                   <label className="text-sm text-[#A3A6B1]">
                     Tempo de Contrato (meses):
@@ -174,7 +162,6 @@ export function CreateServiceDialog({
                   )}
                 </div>
 
-                {/* Descrição */}
                 <div>
                   <label className="text-sm text-[#A3A6B1]">Descrição:</label>
                   <Textarea
@@ -191,9 +178,7 @@ export function CreateServiceDialog({
                 </div>
               </div>
 
-              {/* COLUNA DIREITA */}
               <div className="space-y-4">
-                {/* Upload */}
                 <div>
                   <label className="text-sm text-[#A3A6B1]">Arquivos:</label>
                   <div
@@ -232,7 +217,6 @@ export function CreateServiceDialog({
                   )}
                 </div>
 
-                {/* Valor */}
                 <div>
                   <label className="text-sm text-[#A3A6B1]">Valor:</label>
                   <Controller

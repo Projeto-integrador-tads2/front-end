@@ -148,7 +148,6 @@ export default function EmpresaKanbanPage() {
           queryClient.invalidateQueries({ queryKey: ["kanban-companies"] });
         }
 
-        // 🔥 AQUI FOI A ÚNICA ALTERAÇÃO
         setCompanyDialogOpen(false);
 
       } catch (err) {

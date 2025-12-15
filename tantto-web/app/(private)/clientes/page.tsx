@@ -100,7 +100,6 @@ export default function ClientesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* HEADER */}
       <div className="fixed top-0 left-64 z-40 w-[calc(100%-16rem)] bg-background">
         <div className="flex items-center px-8 py-6 justify-between">
           <div className="w-full max-w-240 relative">
@@ -126,7 +125,6 @@ export default function ClientesPage() {
         </div>
       </div>
 
-      {/* LISTA */}
       <div className="pt-24 px-8 pb-8">
         {isLoadingClients ? (
           <p className="text-center text-[#A3A6B1]">Carregando clientes...</p>
@@ -185,12 +183,10 @@ export default function ClientesPage() {
         )}
       </div>
 
-      {/* MODAL DE DETALHES — IGUAL AO DE EMPRESA */}
       {detailsModalOpen && selectedClient && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-sidebar rounded-3xl p-6 w-11/12 max-w-lg border border-[#34434c]">
 
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-primary/70 text-white font-bold flex items-center justify-center">
@@ -207,7 +203,6 @@ export default function ClientesPage() {
               </button>
             </div>
 
-            {/* Infos */}
             <div className="space-y-4 text-white">
 
               <div>
@@ -229,7 +224,6 @@ export default function ClientesPage() {
 
             </div>
 
-            {/* Botões */}
             <div className="flex gap-3 mt-6">
               <Button
                 className="flex-1 px-4 py-2 rounded-2xl cursor-pointer bg-[#244e6a] text-white hover:bg-[#1f4660] transition-colors text-sm font-medium"
@@ -264,7 +258,6 @@ export default function ClientesPage() {
         </div>
       )}
 
-      {/* CREATE / EDIT MODAL */}
       <CreateClientDialog
         open={isClientDialogOpen}
         onOpenChange={setIsClientDialogOpen}
@@ -276,7 +269,6 @@ export default function ClientesPage() {
         editClient={clientBeingEdited}
       />
 
-      {/* DELETE CONFIRM */}
       <ConfirmDialog
         open={confirmDeleteOpen}
         onOpenChange={setConfirmDeleteOpen}

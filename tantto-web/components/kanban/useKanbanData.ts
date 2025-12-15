@@ -21,12 +21,10 @@ import {
   toastError,
 } from "@/lib/toast-utils";
 
-// Re-export types for backward compatibility
 export type { KanbanPriority } from "@/types/kanban";
 export type KanbanCard = KanbanCardType;
 export type KanbanColumn = KanbanColumnType;
 
-/** Query keys for cache management */
 export const KANBAN_QUERY_KEYS = {
   columns: ["kanban-columns"] as const,
   companies: ["kanban-companies"] as const,
@@ -86,15 +84,6 @@ function transformApiResponse(apiColumns: KanbanColumnResponse[]): KanbanColumn[
  */
 export function useKanbanData() {
   const queryClient = useQueryClient();
-
-  // ============================================
-  // QUERIES
-  // ============================================
-
-  /**
-   * Fetches columns with grouped cards.
-   * This is the primary data source for the Kanban board.
-   */
   const {
     data: columns = [],
     isLoading: isLoadingColumns,
@@ -108,13 +97,10 @@ export function useKanbanData() {
       const apiData = await getCardsGroupedByColumn();
       return transformApiResponse(apiData);
     },
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2, 
     refetchOnWindowFocus: true,
   });
 
-  /**
-   * Fetches all companies for card creation.
-   */
   const {
     data: companies = [],
     isLoading: isLoadingCompanies,
@@ -122,16 +108,8 @@ export function useKanbanData() {
   } = useQuery<CompanyDto[]>({
     queryKey: KANBAN_QUERY_KEYS.companies,
     queryFn: getAllCompanies,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
-
-  // ============================================
-  // CARD MUTATIONS
-  // ============================================
-
-  /**
-   * Creates a new card in the specified column.
-   */
   const addCard = useMutation({
     mutationFn: async (input: CreateCardInput) => {
       return createCard(input);
@@ -145,9 +123,6 @@ export function useKanbanData() {
     },
   });
 
-  /**
-   * Updates an existing card.
-   */
   const editCard = useMutation({
     mutationFn: async (input: UpdateCardInput) => {
       return updateCard(input);
@@ -161,41 +136,29 @@ export function useKanbanData() {
     },
   });
 
-  /**
-   * Moves a card to a different column.
-   * Uses the same payload structure as editCard for consistency.
-   * Includes optimistic update for smooth drag-and-drop UX.
-   */
   const moveCard = useMutation({
     mutationFn: async (input: UpdateCardInput) => {
       const result = await updateCard(input);
       return result;
     },
-    // Optimistic update for immediate visual feedback
     onMutate: async (input) => {
       const { companyCardId: cardId, stepColumnId: targetColumnId } = input;
 
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
 
-      // Snapshot previous value
       const previousColumns = queryClient.getQueryData<KanbanColumn[]>(
         KANBAN_QUERY_KEYS.columns
       );
 
-      // Optimistically update
       if (previousColumns) {
-        // Find the card to move
         const cardToMove = previousColumns
           .flatMap((col) => col.cards)
           .find((c) => c.id === cardId);
 
         if (cardToMove) {
           const newColumns = previousColumns.map((column) => {
-            // Remove card from all columns first
             const cardsWithoutMoved = column.cards.filter((c) => c.id !== cardId);
 
-            // Add card only to target column
             if (column.id === targetColumnId) {
               return {
                 ...column,
@@ -205,7 +168,6 @@ export function useKanbanData() {
                     ...cardToMove,
                     stepColumnId: targetColumnId,
                     column: column.name,
-                    // Update any other fields from the input
                     ...(input.name && { name: input.name, title: input.name }),
                     ...(input.description && { description: input.description }),
                     ...(input.priority && { priority: input.priority }),
@@ -214,7 +176,6 @@ export function useKanbanData() {
               };
             }
 
-            // For other columns, just return without the moved card
             return {
               ...column,
               cards: cardsWithoutMoved,
@@ -227,7 +188,6 @@ export function useKanbanData() {
       return { previousColumns };
     },
     onError: (_error, _variables, context) => {
-      // Rollback on error
       if (context?.previousColumns) {
         queryClient.setQueryData(KANBAN_QUERY_KEYS.columns, context.previousColumns);
       }
@@ -235,14 +195,10 @@ export function useKanbanData() {
     },
   });
 
-  /**
-   * Removes a card from the board.
-   */
   const removeCard = useMutation({
     mutationFn: async (cardId: string) => {
       return deleteCard(cardId);
     },
-    // Optimistic update
     onMutate: async (cardId) => {
       await queryClient.cancelQueries({ queryKey: KANBAN_QUERY_KEYS.columns });
       const previousColumns = queryClient.getQueryData<KanbanColumn[]>(
@@ -270,38 +226,21 @@ export function useKanbanData() {
     },
   });
 
-
-  // ============================================
-  // HELPER FUNCTIONS
-  // ============================================
-
-  /**
-   * Flattens all cards from all columns into a single array.
-   * Useful for search and filtering operations.
-   */
   const allCards = columns.flatMap((column) => column.cards);
 
-  /**
-   * Gets cards count for a specific column.
-   */
   const getColumnCardsCount = (columnId: string): number => {
     const column = columns.find((col) => col.id === columnId);
     return column?.cards.length ?? 0;
   };
 
-  /**
-   * Gets the total count of all cards.
-   */
   const totalCardsCount = allCards.length;
 
   return {
-    // Data
     columns: [...columns].sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0)),
     companies,
     allCards,
     totalCardsCount,
 
-    // Loading states
     isLoadingColumns,
     isFetchingColumns,
     isErrorColumns,
@@ -309,15 +248,11 @@ export function useKanbanData() {
     isLoadingCompanies,
     isErrorCompanies,
 
-    // Card mutations
     addCard,
     editCard,
     moveCard,
     removeCard,
 
-    // Column mutation (only update allowed)
-
-    // Helpers
     getColumnCardsCount,
     refetchColumns,
   };

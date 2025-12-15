@@ -28,24 +28,14 @@ import type { Client } from "@/types/client";
 import { useState } from "react";
 
 export type CreateClientDialogProps = {
-  /** Controls dialog visibility */
   open: boolean;
-  /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
-  /** Callback when form is submitted */
   onSubmit: (data: ClientFormValues) => void;
-  /** List of available companies for selection */
   companies?: CompanyDto[];
-  /** Loading state for submit button */
   isSubmitting?: boolean;
-  /** Client to edit (if in edit mode) */
   editClient?: Client | null;
 };
 
-/**
- * Dialog for creating a new client.
- * Follows the design from the provided screenshots.
- */
 export function CreateClientDialog({
   open,
   onOpenChange,
@@ -72,7 +62,6 @@ export function CreateClientDialog({
 
   const [files, setFiles] = useState<File[]>([]);
 
-  // Reset form when dialog opens
   useEffect(() => {
     if (open) {
       if (editClient) {
@@ -119,24 +108,20 @@ export function CreateClientDialog({
           className="flex flex-col gap-0"
           style={{ fontFamily: "var(--font-jakarta-sans, sans-serif)" }}
         >
-          {/* Title Input */}
           <DialogHeader className="px-6 pt-6">
             <DialogTitle className="text-lg font-semibold text-white bg-[#34434c] rounded-full py-2.5 px-5">
               {isEditMode ? "Editar Cliente" : "Cliente"}
             </DialogTitle>
           </DialogHeader>
 
-          {/* Content Grid */}
           <div className="px-6 py-4">
             <div className="grid grid-cols-2 gap-4  bg-[#34434c] rounded-3xl px-5 py-6">
-              {/* Left Column - Informações */}
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white mb-4">
                   Informações
                 </h3>
 
                 <div className="flex flex-col gap-4">
-                  {/* Nome Completo */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm text-[#A3A6B1] font-medium">
                       Nome Completo:
@@ -154,7 +139,6 @@ export function CreateClientDialog({
                     )}
                   </div>
 
-                  {/* Email */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm text-[#A3A6B1] font-medium">
                       Email:
@@ -172,7 +156,6 @@ export function CreateClientDialog({
                     )}
                   </div>
 
-                  {/* Telefone */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm text-[#A3A6B1] font-medium">
                       Telefone:
@@ -189,7 +172,6 @@ export function CreateClientDialog({
                     )}
                   </div>
 
-                  {/* Empresa */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm text-[#A3A6B1] font-medium">
                       Empresa:
@@ -225,7 +207,6 @@ export function CreateClientDialog({
                     )}
                   </div>
 
-                  {/* Data de Criação (read-only) */}
                   <div className="flex flex-col gap-1">
                     <label className="text-sm text-[#A3A6B1] font-medium">
                       Data de Criação:
@@ -239,7 +220,6 @@ export function CreateClientDialog({
                 </div>
               </div>
 
-              {/* Right Column - Mídias */}
               <div>
                 <label className="text-xs text-white font-medium">Mídias</label>
                 <div
@@ -268,7 +248,6 @@ export function CreateClientDialog({
                   </div>
                 </div>
 
-                {/* preview */}
                 {files.length > 0 && (
                   <div className="mt-2 flex gap-2 flex-wrap">
                     {files.map((f, i) => (

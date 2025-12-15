@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-/**
- * Zod schema for service form validation.
- * Used for both create and edit operations.
- */
 export const serviceFormSchema = z.object({
   name: z
     .string()
@@ -25,7 +21,4 @@ export const serviceFormSchema = z.object({
   servicePicture: z.string().optional().nullable(),
 });
 
-/**
- * Inferred type from the service form schema.
- */
 export type ServiceFormValues = z.infer<typeof serviceFormSchema>;

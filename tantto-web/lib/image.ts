@@ -4,9 +4,7 @@ export const toDataUrl = (
 ) => {
   if (!base64OrData) return undefined;
   if (base64OrData === "null") return undefined;
-  // already a data URL
   if (base64OrData.startsWith("data:")) return base64OrData;
-  // otherwise assume it's raw base64 and build a data URL
   return `data:${mime};base64,${base64OrData}`;
 };
 
@@ -16,7 +14,6 @@ export const base64ToObjectUrl = (
 ) => {
   if (!base64OrData) return undefined;
   if (base64OrData === "null") return undefined;
-  // extract raw base64 if it's already a data url
   const clean = base64OrData.startsWith("data:")
     ? base64OrData.split(",")[1]
     : base64OrData;
@@ -30,7 +27,6 @@ export const base64ToObjectUrl = (
     const blob = new Blob([byteArray], { type: mime });
     return URL.createObjectURL(blob);
   } catch {
-    // if atob fails, return undefined
     return undefined;
   }
 };

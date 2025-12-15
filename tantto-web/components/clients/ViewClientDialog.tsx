@@ -9,17 +9,11 @@ import { X } from "lucide-react";
 import type { Client } from "@/types/client";
 
 export type ViewClientDialogProps = {
-  /** Controls dialog visibility */
   open: boolean;
-  /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
-  /** The client data to display */
   client: Client | null;
 };
 
-/**
- * Gets initials from a name string.
- */
 function getInitials(name: string): string {
   if (!name) return "?";
   const parts = name.trim().split(" ");
@@ -27,9 +21,6 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-/**
- * Formats a date string to PT-BR format.
- */
 function formatDate(dateString: string | null): string {
   if (!dateString) return "-";
   try {
@@ -39,10 +30,7 @@ function formatDate(dateString: string | null): string {
   }
 }
 
-/**
- * Dialog for viewing client details.
- * Follows the design from the provided screenshots (Detalhes Cliente).
- */
+
 export function ViewClientDialog({
   open,
   onOpenChange,
@@ -57,7 +45,6 @@ export function ViewClientDialog({
         showCloseButton={false}
       >
         <div className="flex flex-col">
-          {/* Header with client name and company */}
           <div className="flex items-center justify-between px-6 pt-6 pb-4">
             <div className="flex items-center gap-4">
               <Avatar className="h-12 w-12">
@@ -82,7 +69,6 @@ export function ViewClientDialog({
             </button>
           </div>
 
-          {/* Content */}
           <div className="px-6 pb-6">
             <div className="bg-muted rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-6">
@@ -90,7 +76,6 @@ export function ViewClientDialog({
               </h3>
 
               <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                {/* Nome Completo */}
                 <div className="flex flex-col gap-1">
                   <label className="text-sm text-[#A3A6B1] font-medium">
                     Nome Completo:
@@ -100,7 +85,6 @@ export function ViewClientDialog({
                   </div>
                 </div>
 
-                {/* Email */}
                 <div className="flex flex-col gap-1">
                   <label className="text-sm text-[#A3A6B1] font-medium">
                     Email:
@@ -110,7 +94,6 @@ export function ViewClientDialog({
                   </div>
                 </div>
 
-                {/* Telefone */}
                 <div className="flex flex-col gap-1">
                   <label className="text-sm text-[#A3A6B1] font-medium">
                     Telefone:
@@ -120,7 +103,6 @@ export function ViewClientDialog({
                   </div>
                 </div>
 
-                {/* Data de Criação */}
                 <div className="flex flex-col gap-1">
                   <label className="text-sm text-[#A3A6B1] font-medium">
                     Data de Criação:

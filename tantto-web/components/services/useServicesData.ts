@@ -8,7 +8,6 @@ import {
 } from "@/services/services";
 import type { Service, CreateServiceDto, UpdateServiceDto } from "@/types/service";
 
-/** Query keys for service cache management */
 export const SERVICE_QUERY_KEYS = {
   all: ["services"] as const,
   byId: (id: string) => ["services", id] as const,
@@ -30,13 +29,6 @@ export const SERVICE_QUERY_KEYS = {
 export function useServicesData() {
   const queryClient = useQueryClient();
 
-  // ============================================
-  // QUERIES
-  // ============================================
-
-  /**
-   * Fetches all services.
-   */
   const {
     data: services = [],
     isLoading: isLoadingServices,
@@ -47,17 +39,11 @@ export function useServicesData() {
   } = useQuery<Service[]>({
     queryKey: SERVICE_QUERY_KEYS.all,
     queryFn: getAllServices,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2, 
     refetchOnWindowFocus: true,
   });
 
-  // ============================================
-  // MUTATIONS
-  // ============================================
 
-  /**
-   * Creates a new service.
-   */
   const createServiceMutation = useMutation({
     mutationFn: async (data: CreateServiceDto) => {
       return createService(data);
@@ -70,9 +56,6 @@ export function useServicesData() {
     },
   });
 
-  /**
-   * Updates an existing service.
-   */
   const updateServiceMutation = useMutation({
     mutationFn: async ({
       serviceId,
@@ -91,9 +74,6 @@ export function useServicesData() {
     },
   });
 
-  /**
-   * Deletes a service.
-   */
   const deleteServiceMutation = useMutation({
     mutationFn: async (serviceId: string) => {
       return deleteService(serviceId);
@@ -107,21 +87,16 @@ export function useServicesData() {
   });
 
   return {
-    // Data
     services,
 
-    // Loading states
     isLoadingServices,
     isFetchingServices,
 
-    // Error states
     isErrorServices,
     servicesError,
 
-    // Actions
     refetchServices,
 
-    // Mutations
     createServiceMutation,
     updateServiceMutation,
     deleteServiceMutation,

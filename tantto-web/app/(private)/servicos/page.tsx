@@ -10,30 +10,19 @@ import { AsyncBoundary } from "@/components/common/AsyncBoundary";
 import type { Service } from "@/types/service";
 import type { ServiceFormValues } from "@/validators/service-schema";
 
-/**
- * Dialog state for managing service creation/editing.
- */
+
 type ServiceDialogState = {
   isOpen: boolean;
   editService: Service | null;
 };
 
-/**
- * Dialog state for viewing service details.
- */
 type ViewDialogState = {
   isOpen: boolean;
   service: Service | null;
 };
 
-/**
- * Services listing page.
- * Displays a searchable list of services with create, edit, and delete functionality.
- */
 export default function ServicesPage() {
-  // ============================================
-  // STATE & DATA HOOKS
-  // ============================================
+
 
   const {
     services,
@@ -46,28 +35,20 @@ export default function ServicesPage() {
     deleteServiceMutation,
   } = useServicesData();
 
-  // Search state
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Service dialog state
   const [serviceDialog, setServiceDialog] = useState<ServiceDialogState>({
     isOpen: false,
     editService: null,
   });
 
-  // View dialog state
   const [viewDialog, setViewDialog] = useState<ViewDialogState>({
     isOpen: false,
     service: null,
   });
 
-  // Delete confirmation
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
-
-  // ============================================
-  // FILTERED DATA
-  // ============================================
 
   const filteredServices = useMemo(() => {
     if (!searchQuery.trim()) return services;
@@ -80,27 +61,14 @@ export default function ServicesPage() {
     );
   }, [services, searchQuery]);
 
-  // ============================================
-  // HANDLERS
-  // ============================================
-
-  /**
-   * Opens the create service dialog.
-   */
   const handleOpenCreateDialog = useCallback(() => {
     setServiceDialog({ isOpen: true, editService: null });
   }, []);
 
-  /**
-   * Opens the edit service dialog with the selected service.
-   */
   const handleOpenEditDialog = useCallback((service: Service) => {
     setServiceDialog({ isOpen: true, editService: service });
   }, []);
 
-  /**
-   * Handles service form submission (create or update).
-   */
   const handleServiceSubmit = useCallback(
     (data: ServiceFormValues) => {
       if (serviceDialog.editService) {
@@ -128,9 +96,6 @@ export default function ServicesPage() {
     [serviceDialog.editService, createServiceMutation, updateServiceMutation]
   );
 
-  /**
-   * Opens the view service dialog with the selected service.
-   */
   const handleViewService = useCallback((service: Service) => {
     setViewDialog({
       isOpen: true,
@@ -138,9 +103,6 @@ export default function ServicesPage() {
     });
   }, []);
 
-  /**
-   * Handles service deletion.
-   */
   const handleDeleteService = useCallback(() => {
     if (serviceToDelete) {
       deleteServiceMutation.mutate(serviceToDelete.id, {
@@ -152,16 +114,10 @@ export default function ServicesPage() {
     }
   }, [serviceToDelete, deleteServiceMutation]);
 
-  // ============================================
-  // RENDER
-  // ============================================
-
   return (
     <div className="min-h-screen bg-background">
-      {/* HEADER */}
       <div className="fixed top-0 left-64 z-40 w-[calc(100%-16rem)] bg-background">
         <div className="flex items-center px-8 py-6 justify-between">
-          {/* SEARCH */}
           <div className="w-full max-w-240 relative">
             <input
               type="text"
@@ -265,7 +221,6 @@ export default function ServicesPage() {
         </AsyncBoundary>
       </div>
 
-      {/* VIEW SERVICE DIALOG */}
       <ViewServiceDialog
         open={viewDialog.isOpen}
         onOpenChange={(open) =>
@@ -274,7 +229,6 @@ export default function ServicesPage() {
         service={viewDialog.service}
       />
 
-      {/* CREATE / EDIT SERVICE DIALOG */}
       <CreateServiceDialog
         open={serviceDialog.isOpen}
         onOpenChange={(open) =>
@@ -287,7 +241,6 @@ export default function ServicesPage() {
         }
       />
 
-      {/* CONFIRM DELETE DIALOG */}
       {confirmDeleteOpen && serviceToDelete && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-sidebar rounded-2xl p-6 w-11/12 max-w-md border border-card shadow-xl">

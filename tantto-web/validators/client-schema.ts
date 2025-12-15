@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-/**
- * Zod schema for client form validation.
- * Used for both create and edit operations.
- */
+
 export const clientFormSchema = z.object({
   name: z
     .string()
@@ -24,14 +21,8 @@ export const clientFormSchema = z.object({
     .min(1, "Empresa é obrigatória"),
 });
 
-/**
- * Inferred type from the client form schema.
- */
 export type ClientFormValues = z.infer<typeof clientFormSchema>;
 
-/**
- * Schema for client update (without companyId as it's not editable).
- */
 export const clientUpdateSchema = z.object({
   name: z
     .string()

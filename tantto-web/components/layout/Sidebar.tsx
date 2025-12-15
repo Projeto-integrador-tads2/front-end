@@ -4,13 +4,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Users, Building2, FileText, LogOut, Network } from "lucide-react";
+import {
+  Users,
+  Building2,
+  FileText,
+  LogOut,
+  Network,
+  UserPlus,
+} from "lucide-react";
 
 const menuOptions = [
   { label: "Prospecção", icon: <Network size={20} />, href: "/prospeccao" },
   { label: "Empresas", icon: <Building2 size={20} />, href: "/empresas" },
   { label: "Clientes", icon: <Users size={20} />, href: "/clientes" },
   { label: "Serviços", icon: <FileText size={20} />, href: "/servicos" },
+];
+
+const adminMenuOptions = [
+  {
+    label: "Cadastrar Usuário",
+    icon: <UserPlus size={20} />,
+    href: "/auth/register",
+  },
 ];
 
 function getInitials(name?: string) {
@@ -25,9 +40,13 @@ export default function Sidebar() {
 
   const pathname = usePathname() || "/";
 
-
   const userName = session?.user?.name ?? "Usuário";
   const userRole = session?.user?.role ?? "Colaborador";
+  const isAdmin = userRole === "Admin";
+
+  const visibleMenuOptions = isAdmin
+    ? [...menuOptions, ...adminMenuOptions]
+    : menuOptions;
 
   return (
     <aside
@@ -48,10 +67,8 @@ export default function Sidebar() {
             TANTTO
           </span>
         </div>
-        {/* Menu */}
         <nav className="flex flex-col gap-2 mt-4 px-6">
-          {menuOptions.map((option) => {
-
+          {visibleMenuOptions.map((option) => {
             const isActive =
               pathname === option.href ||
               pathname.startsWith(option.href + "/");
@@ -62,7 +79,6 @@ export default function Sidebar() {
                   className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors
                     ${
                       isActive
-
                         ? "bg-(--color-card) text-(--color-sidebar-foreground)"
                         : "text-(--color-sidebar-foreground) hover:bg-(--color-card)"
                     }
@@ -83,36 +99,28 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Rodapé: Usuário + Logout */}
       <div className="px-6 pb-6">
         <div className="flex items-center justify-between bg-(--color-card rounded-xl px-3 py-2">
           <div className="flex items-center gap-3">
-            {/* Avatar */}
             <div className="w-9 h-9 rounded-full bg-(--color-sidebar-border) flex items-center justify-center text-(--color-sidebar-foreground) font-bold text-lg select-none">
               {getInitials(userName)}
             </div>
-            {/* Nome e papel */}
             <div className="flex flex-col">
-
               <span className="text-sm font-semibold text-(--color-sidebar-foreground) font-jakarta-sans leading-tight">
                 {userName}
               </span>
               <span className="text-xs text-(--color-muted-foreground) font-jakarta-sans leading-tight">
-
                 {userRole}
               </span>
             </div>
           </div>
-          
+
           <button
             title="Sair"
             onClick={() => signOut()}
             className="p-2 rounded hover:bg-(--color-sidebar-border) transition-colors cursor-pointer"
           >
-            <LogOut
-              size={18}
-              className="text-(--color-muted-foreground)"
-            />
+            <LogOut size={18} className="text-(--color-muted-foreground)" />
           </button>
         </div>
       </div>

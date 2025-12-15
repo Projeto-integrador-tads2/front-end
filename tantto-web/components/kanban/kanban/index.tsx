@@ -84,7 +84,7 @@ export const KanbanBoard = ({ id, children, className }: KanbanBoardProps) => {
       )}
       style={{
         minWidth: 320,
-        flexShrink: 0, // Prevent columns from shrinking
+        flexShrink: 0, 
       }}
       ref={setNodeRef}
     >
@@ -157,7 +157,6 @@ export type KanbanCardsProps<T extends KanbanItemProps = KanbanItemProps> =
     id: string;
   };
 
-// Helper to get the column id from a KanbanCard
 const getItemColumn = (item: KanbanCardType) => item.stepColumnId;
 
 export const KanbanCards = ({

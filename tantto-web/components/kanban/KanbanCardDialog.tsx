@@ -9,10 +9,7 @@ import { useEffect } from "react";
 import type { KanbanCard, KanbanPriority } from "@/types/kanban";
 import type { CompanyDto } from "@/types/kanban";
 
-/**
- * Schema for card form validation.
- * Validates title, description, priority, and required IDs.
- */
+
 const cardFormSchema = z.object({
   name: z.string().min(1, "Título obrigatório").max(60, "Máximo 60 caracteres").optional(),
   description: z.string().max(200, "Máximo 200 caracteres").optional(),
@@ -24,19 +21,12 @@ const cardFormSchema = z.object({
 export type CardFormValues = z.infer<typeof cardFormSchema>;
 
 export type KanbanCardDialogProps = {
-  /** Controls dialog visibility */
   open: boolean;
-  /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
-  /** Callback when form is submitted */
   onSubmit: (data: CardFormValues) => void;
-  /** The target column ID for new cards */
   columnId: string;
-  /** Edit mode: existing card data to edit */
   editCard?: KanbanCard | null;
-  /** List of available companies for selection */
   companies?: CompanyDto[];
-  /** Loading state for submit button */
   isSubmitting?: boolean;
 };
 
@@ -62,7 +52,6 @@ export function KanbanCardDialog({
     },
   });
 
-  // Reset form when dialog opens or edit card changes
   useEffect(() => {
     if (open) {
       if (editCard) {
@@ -100,7 +89,6 @@ export function KanbanCardDialog({
           className="flex flex-col gap-0"
           style={{ fontFamily: 'var(--font-jakarta-sans, sans-serif)' }}
         >
-          {/* Hidden field for stepColumnId */}
           <input type="hidden" {...form.register("stepColumnId")} />
 
           <DialogHeader className="px-8 pt-7 pb-2">
@@ -110,7 +98,6 @@ export function KanbanCardDialog({
           </DialogHeader>
 
           <div className="flex flex-col gap-3 px-8 py-2">
-            {/* Company Selection */}
             <div className="flex flex-col gap-1">
               <label className="text-xs text-[#A3A6B1] font-medium">Empresa *</label>
               <Select
@@ -135,7 +122,6 @@ export function KanbanCardDialog({
               )}
             </div>
 
-            {/* Title (optional, for display purposes) */}
             <Input
               {...form.register("name")}
               placeholder="Título do card (opcional)"
@@ -148,7 +134,6 @@ export function KanbanCardDialog({
               </span>
             )}
 
-            {/* Description */}
             <Input
               {...form.register("description")}
               placeholder="Descrição (opcional)"
@@ -160,7 +145,6 @@ export function KanbanCardDialog({
               </span>
             )}
 
-            {/* Priority Selection */}
             <Select
               value={form.watch("priority")}
               onValueChange={(v) => form.setValue("priority", v as KanbanPriority)}

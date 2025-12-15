@@ -1,6 +1,6 @@
 // src/services/auth/register.ts
 
-import api from "@/services/api"; // ← usa a api com token (autenticada)
+import api from "@/services/api"; 
 import type { AxiosError } from "axios";
 
 export interface RegisterData {
@@ -22,13 +22,12 @@ export interface RegisterResponse {
 
 export async function registerUser(data: RegisterData): Promise<RegisterResponse> {
   try {
-    const response = await api.post("/Auth/register", data); // ← usa api autenticada
+    const response = await api.post("/Auth/register", data); 
 
     return {
         success: true,
         response: response.data,
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
 
     let message = "Erro ao criar usuário";

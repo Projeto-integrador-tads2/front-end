@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon, Lock, Mail } from "lucide-react";
 import { LoginData, loginSchema } from "@/validators/login-schema";
 import Image from "next/image";
-import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
@@ -32,7 +31,6 @@ export default function LoginPage() {
 
   const onSubmit = (data: LoginData) => {
     logIn(data);
-    // TODO: Implementar autenticação
     console.log(data);
   };
 
@@ -108,17 +106,6 @@ export default function LoginPage() {
               ENTRAR
             </Button>
           </form>
-          <div className="mt-6 text-center">
-            <span className="text-[#bfc8d0] text-sm">
-              Não tem uma conta?{" "}
-              <Link
-                href="/auth/register"
-                className="text-[#21c45d] font-semibold hover:underline"
-              >
-                Cadastre-se
-              </Link>
-            </span>
-          </div>
         </div>
       </div>
     </div>
