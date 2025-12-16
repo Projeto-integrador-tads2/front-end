@@ -2,23 +2,24 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon, Lock, Mail } from "lucide-react";
-import { LoginFormValues, loginSchema } from "@/validators/login-schema";
+import { LoginData, loginSchema } from "@/validators/login-schema";
 import Image from "next/image";
-import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const { logIn } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<LoginFormValues>({
+  } = useForm<LoginData>({
     reValidateMode: "onChange",
     mode: "onTouched",
     defaultValues: {
@@ -28,8 +29,8 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    // TODO: Implementar autenticação
+  const onSubmit = (data: LoginData) => {
+    logIn(data);
     console.log(data);
   };
 
@@ -101,30 +102,10 @@ export default function LoginPage() {
                 onEndContentClick={() => setShowPassword(!showPassword)}
               />
             </div>
-            <div className="w-full text-center">
-              <Link
-                href="#"
-                className="text-xs text-[#bfc8d0] hover:underline"
-                tabIndex={0}
-              >
-                Esqueceu sua senha?
-              </Link>
-            </div>
             <Button type="submit" disabled={!isValid}>
               ENTRAR
             </Button>
           </form>
-          <div className="mt-6 text-center">
-            <span className="text-[#bfc8d0] text-sm">
-              Não tem uma conta?{" "}
-              <a
-                href="#"
-                className="text-[#21c45d] font-semibold hover:underline"
-              >
-                Cadastre-se
-              </a>
-            </span>
-          </div>
         </div>
       </div>
     </div>

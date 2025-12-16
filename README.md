@@ -1,385 +1,360 @@
-# CRM para a Empresa Tantto Tecnologia
+# CRM Tantto Tecnologia
 
-> Documento de Visão do projeto de CRM desenvolvido para centralizar e otimizar a gestão comercial da **Tantto Tecnologia**.
-
----
-
-## Autores
-- **Felipe Marques** – [felipemq100@gmail.com](mailto:felipemq100@gmail.com)  
-- **Gabriel Ribeiro** – SENAI  
-- **Giovana da Silva** – [giovanarafaela798@gmail.com](mailto:giovanarafaela798@gmail.com)  
-- **Tobias Alquezar** – [tobiasperassi@gmail.com](mailto:tobiasperassi@gmail.com)  
+> Sistema de Customer Relationship Management desenvolvido para centralizar e otimizar a gestão comercial da **Tantto Tecnologia**.
 
 ---
 
-## Índice
-- [1. Introdução](#1-introdução)
-- [2. Posicionamento](#2-posicionamento)
-- [3. Stakeholders e Usuários](#3-stakeholders-e-usuários)
-- [4. Descrição do Produto](#4-descrição-do-produto)
-- [5. Requisitos de Alto Nível](#5-requisitos-de-alto-nível)
-- [6. Características de Qualidade](#6-características-de-qualidade)
-- [7. Restrições](#7-restrições)
-- [8. Riscos](#8-riscos)
-- [9. Cronograma de Marcos](#9-cronograma-de-marcos)
+##  Sobre o Projeto
+
+O **CRM Tantto** é uma solução completa para gerenciamento de relacionamento com clientes, oferecendo funcionalidades de cadastro, acompanhamento visual via Kanban, gestão de serviços e geração de relatórios estratégicos.
+
+###  Objetivos
+
+- Centralizar o processo comercial da empresa
+- Facilitar a gestão de leads e negociações
+- Proporcionar visibilidade clara do funil de vendas
+- Gerar insights através de relatórios e dashboards
+- Otimizar o acompanhamento de oportunidades
 
 ---
 
-## 1. Introdução
+##  Equipe de Desenvolvimento
 
-### 1.1 Objetivo do Projeto
-Desenvolver um sistema de CRM para a **Tantto Tecnologia**, centralizando o processo comercial, facilitando a gestão de leads e negociações, além de gerar relatórios para apoio à tomada de decisão.
-
-### 1.2 Escopo do Produto
-- Cadastro de leads, organizações e pessoas  
-- Acompanhamento visual por Kanban  
-- Geração de relatórios  
-- Acesso multiplataforma  
-- Uso de tecnologias **open source**  
-
-### 1.3 Definições
-- **CRM:** Customer Relationship Management  
-- **Kanban:** Modelo visual de gestão de tarefas  
-- **Lead:** Potencial cliente  
-
-### 1.4 Referências
-Documentos da Tantto Tecnologia, orientações da Escola SENAI e literatura sobre CRM e gestão de vendas.
+- **Felipe Marques** – [felipemq100@gmail.com](mailto:felipemq100@gmail.com)
+- **Gabriel Ribeiro** – [gabriel.dev09@gmail.com](mailto:gabriel.dev09@gmail.com) 
+- **Giovana da Silva** – [giovanarafaela798@gmail.com](mailto:giovanarafaela798@gmail.com)
+- **Tobias Alquezar** – [tobiasperassi@gmail.com](mailto:tobiasperassi@gmail.com)
 
 ---
 
-## 2. Posicionamento
+##  Funcionalidades Principais
 
-### 2.1 Oportunidade de Negócio
-A empresa carece de uma solução unificada para gerenciar leads e vendas, comprometendo sua eficiência comercial.
+### Gestão de Empresas
+- Cadastro completo de empresas (nome, CNPJ, setor, representante)
+- Listagem e busca avançada de empresas
+- Edição e visualização de detalhes
+- Upload de logo/imagem da empresa
 
-### 2.2 Problema a Ser Resolvido
-A ausência de um sistema CRM compromete o acompanhamento de oportunidades, organização de contatos e análise de dados comerciais.
+### Pipeline Kanban
+- Visualização do funil de vendas em formato Kanban
+- Cartões customizáveis por empresa
+- Atualização de estágios através de drag & drop
+- Priorização visual de negociações
 
-### 2.3 Descrição do Produto
-Sistema CRM com:
-- Gestão de contatos
-- Funil de vendas visual
-- Relatórios
-- Interface simples
+### Gestão de Serviços
+- Catálogo de serviços oferecidos
+- Vinculação de serviços às empresas
+- Controle de duração de contratos e valores
+- Upload de imagens ilustrativas dos serviços
 
-### 2.4 Declaração de Posição do Produto
-> O **CRM Tantto** é uma ferramenta que centraliza dados, otimiza processos e fornece visibilidade clara das oportunidades para a equipe comercial.
+### Gestão de Clientes
+- Cadastro de clientes vinculados às empresas
+- Informações de contato completas
+- Histórico de interações
 
----
+### Sistema de Usuários
+- Autenticação segura (Login/Logout)
+- Controle de acesso baseado em perfis
+- Cadastro e gerenciamento de usuários
+- Foto de perfil personalizável
 
-## 3. Stakeholders e Usuários
-
-### 3.1 Stakeholders
-- Thiago Martins – Representante da empresa  
-- Equipe comercial da Tantto  
-- Equipe técnica de desenvolvimento  
-
-### 3.2 Perfis de Usuários
-- Vendedores  
-- Gestores  
-- Administradores  
-
-### 3.3 Necessidades
-- Organizar contatos  
-- Acompanhar negociações  
-- Gerar relatórios  
-- Apoiar decisões estratégicas  
-
-### 3.4 Ambiente Operacional
-- Navegadores modernos  
-- Layout responsivo (desktop e mobile)  
-- Hospedagem em servidor de nuvem de baixo custo  
+### Análises e Relatórios
+- Previsão de probabilidade de fechamento
+- Dashboards com métricas de vendas
+- Relatórios por estágio do funil
 
 ---
 
-## 4. Descrição do Produto
+##  Arquitetura do Sistema
 
-### 4.1 Perspectiva
-Sistema desenvolvido sob medida, com possibilidade de integrações futuras.
+### Modelo de Dados
 
-### 4.2 Funcionalidades
-- Cadastro de leads  
-- Visualização Kanban  
-- Relatórios e dashboards  
-- Login com controle de perfil  
+O sistema é construído sobre 6 entidades principais:
 
-### 4.3 Suposições e Dependências
-**Front-end:**
-- Next.js + TypeScript  
-- React, Yup, NextAuth  
+#### 1. **UserModel**
+- Gerenciamento de usuários do sistema
+- Controle de autenticação e autorização
+- Perfil e preferências do usuário
 
-**Back-end:**
-- .NET + C#  
-- ORM para banco de dados  
-- Swagger para documentação  
-- Arquitetura em camadas  
+#### 2. **CompanyModel**
+- Dados cadastrais das empresas
+- Informações corporativas (CNPJ, setor)
+- Relacionamento com clientes e cartões
 
-**Banco de dados:**
-- MySQL  
+#### 3. **ClientModel**
+- Pessoas de contato das empresas
+- Dados de comunicação
+- Vinculação com empresas
 
-### 4.4 Limitações
-- Sem integração inicial com sistemas externos  
-- Sem funcionalidades pagas  
+#### 4. **ServiceModel**
+- Catálogo de serviços oferecidos
+- Descrição, valores e duração
+- Documentação visual
 
----
+#### 5. **CompanyCardModel**
+- Representação visual no Kanban
+- Prioridade e status da negociação
+- Vinculação com empresa e estágio
 
-## 5. Requisitos de Alto Nível
+#### 6. **StepColumnModel**
+- Etapas do funil de vendas
+- Ordenação e visualização
+- Configuração de cores e status
 
-### 5.1 Funcionais
-- Cadastro de leads, organizações e pessoas  
-- Funil visual Kanban  
-- Relatórios gerenciais  
-- Controle de acesso  
-
-### 5.2 Não Funcionais
-- Interface responsiva  
-- Suporte a múltiplos usuários  
-- Tempo de resposta rápido  
-- Uso de software livre  
-
----
-
-## 6. Características de Qualidade
-| Característica  | Descrição |
-|----------------|-----------|
-| **Usabilidade** | Interface simples e intuitiva |
-| **Confiabilidade** | Sistema estável, com backups |
-| **Desempenho** | Baixo tempo de resposta |
-| **Segurança** | Acesso controlado |
-| **Portabilidade** | Multiplataforma |
+### Relacionamentos
+```
+UserModel (1) ──── (N) CompanyCardModel
+CompanyModel (1) ──── (N) ClientModel
+CompanyModel (1) ──── (N) CompanyCardModel
+CompanyModel (N) ──── (N) ServiceModel
+StepColumnModel (1) ──── (N) CompanyCardModel
+```
 
 ---
 
-## 7. Restrições
-- Não utilizar tecnologias pagas ou complexas  
-- Não depender de hardware específico ou sistemas proprietários  
+##  Stack Tecnológica
 
----
-
-## 8. Riscos
-- Adoção limitada pela equipe comercial  
-- Mudanças de escopo  
-- Infraestrutura limitada  
-
----
-
-## 9. Cronograma de Marcos
-
-| Marco                           | Data       |
-|---------------------------------|------------|
-| Início da análise de requisitos | 11/08/2025 |
-| Protótipo de interface          | 22/08/2025 |
-| Versão MVP funcional            | 03/10/2025 |
-| Testes com usuários             | 07/11/2025 |
-| Entrega final                   | 12/12/2025 |
-
----
-
-## Tecnologias Previstas
+### Frontend
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+
+**Principais Bibliotecas:**
+- **Next.js** - Framework React com SSR
+- **TypeScript** - Tipagem estática
+- **NextAuth** - Autenticação
+- **Zod** - Validação de schemas
+- **React Hook Form** - Gerenciamento de formulários
+- **React Query** - Estado assíncrono e cache
+
+### Backend
 ![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
 
-## 10. FIGMA
-A seguir, uma representação visual do protótipo da interface principal do sistema, com foco na visualização Kanban para o gerenciamento de negociações.
+**Arquitetura:**
+- **.NET 8** com C#
+- **Entity Framework Core** - ORM
+- **Swagger** - Documentação de API
+- **Arquitetura em camadas** (Controller → Service → Repository)
+- **JWT** - Autenticação segura
 
-![Protótipo de Tela](./imagens/Captura%20de%20tela%202025-08-21%20212658.png)
-
-[Link do Figma](https://www.figma.com/design/T0y1W7rVJpisFfAbKueD99/Projeto-Integrador-2?node-id=0-1&t=v8jAjMGPzYxtSbLJ-1)
-
-
-## 11. Planejamento de Sprints (Versão Ajustada: Pipeline/Stages antes de Interesses)
-
-> Alteração solicitada: Priorizar o funcionamento do funil / kanban (Stages/Steps) antes da associação de interesses a serviços.  
-> Resultado: A antiga Sprint 4 (Stages) foi movida para a Sprint 3, e Serviços + Interesses passaram para a Sprint 4. Pequenos ajustes de dependências foram feitos.
-
-## 11.1 Visão Geral
-Objetivo: Construir um MVP de um sistema interno para:
-- Cadastrar e gerenciar clientes e seus estágios no funil.
-- Manter um catálogo de serviços.
-- Registrar interesses (cliente x serviço).
-- Prover visão inicial de pipeline e engajamento.
-
-Abordagem: Entregas verticais por valor (login → clientes → pipeline/stages → serviços/interesses → relatórios), evitando “CRUDs isolados”.
+### Banco de Dados
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 
 ---
 
-## 11.2 Domínio e Entidades
-
-### Entidades Principais (MVP)
-- **User**: funcionário (auth, roles).
-- **Client**: dados básicos + estágio (stage/step).
-- **Step (Stage)**: etapas do funil (Lead, Qualificado, Proposta, Fechado).
-- **Service**: catálogo de serviços.
-- **Interest**: relação N:N Client ↔ Service (metadados simples).
-
-### Possíveis Extensões Futuras
-- Notes / Interactions
-- Tasks / Follow-ups  
-- Audit Trail avançado
-- Relatórios de conversão
-- Tags / Segmentação
-- Exportações e notificações
-
----
-
-## 11.3 Backlog Inicial (User Stories)
-
-### Core
-1. Como funcionário quero fazer login para acessar o sistema.
-2. Como admin quero criar/gerenciar usuários para controlar acesso.
-3. Como funcionário quero cadastrar um novo cliente para iniciar acompanhamento.
-4. Como funcionário quero ver uma lista filtrável de clientes para localizar rapidamente.
-5. Como funcionário quero visualizar detalhes de um cliente (dados + estágio).
-6. Como funcionário quero atualizar o estágio de um cliente no funil.
-7. Como funcionário quero gerenciar o catálogo de serviços.
-8. Como funcionário quero associar serviços de interesse a um cliente.
-9. Como funcionário quero pesquisar clientes por nome/email.
-10. Como funcionário quero sair (logout) para encerrar a sessão.
-
-(Reordenado para refletir prioridade de estágio antes de interesses.)
-
-### Suporte / Técnico
-11. Como desenvolvedor quero pipeline CI/CD básico.
-12. Como desenvolvedor quero logs estruturados para diagnóstico.
-13. Como admin quero roles (admin vs user) para restringir operações.
-14. Como compliance quero timestamps de criação/alteração.
-
-### Futuro / Estendido
-15. Como gestor quero relatório de clientes por estágio.
-16. Como gestor quero ver serviços mais demandados (interesses).
-17. Como funcionário quero adicionar notas de contato.
-18. Como funcionário quero marcar follow-ups/tarefas.
+##  Estrutura do Projeto
+```
+crm-tantto/
+├── frontend/
+│   ├── src/
+│   │   ├── app/              # Rotas Next.js
+│   │   ├── components/       # Componentes React
+│   │   ├── services/         # Chamadas API
+│   │   ├── hooks/            # Custom hooks
+│   │   ├── types/            # Tipos TypeScript
+│   │   └── lib/              # Utilitários
+│   └── public/               # Assets estáticos
+│
+├── backend/
+│   ├── Controllers/          # Endpoints da API
+│   ├── Services/             # Lógica de negócio
+│   ├── Repositories/         # Acesso a dados
+│   ├── Models/               # Entidades do domínio
+│   ├── DTOs/                 # Data Transfer Objects
+│   └── Migrations/           # Migrações do banco
+│
+└── docs/                     # Documentação técnica
+```
 
 ---
 
-## 11.4 Planejamento de Sprints (Sugerido - 2 semanas cada)
+##  Design e Prototipação
 
-### Sprint 0 (Setup / Pré)
-Objetivo: Fundamento técnico.
-- Definir arquitetura pastas (Backend + Front).
-- Docker Compose (API + DB).
-- Repositório(s) + Git hooks + lint/format (ESLint, Prettier, EditorConfig, .NET analyzers).
-- Modelo inicial: User, Client, Step, Service (rasa), Interest (placeholder).
-- Decisão de auth (Identity + JWT ou NextAuth com provider custom).
-- Swagger configurado.
-Entregável: Ambiente local rodando.
+### Figma
+O protótipo completo da interface está disponível no Figma, incluindo:
+- Telas de autenticação
+- Dashboard principal
+- Visualização Kanban
+- Formulários de cadastro
+- Detalhamento de empresas
 
-### Sprint 1 (Autenticação e Usuários)
-Stories: 1, 2, 11 (parcial), 13 (parcial).  
-Backend:
-- Entidade User + Roles (admin, user).
-- Endpoints: login, refresh (se necessário), CRUD básico usuários (restrito).
-Frontend:
-- Tela Login.
-- Layout autenticado (shell com nav).
-- Página lista de usuários (CRUD mínimo).
-Qualidade:
-- Testes unitários AuthService e UserService.
-- Swagger endpoints auth/users.
-Resultado: Sistema acessível somente autenticado; admin seed.
-
-### Sprint 2 (Clientes - Cadastro e Listagem)
-Stories: 3, 4, 9, 14 (timestamps).  
-Backend:
-- Entidade Client (nome, email único, telefone, stageId opcional).
-- Endpoints: create, list (paginação + filtro nome/email), get by id.
-Frontend:
-- Form criar cliente (validação Zod).
-- Lista clientes com busca (debounce).
-- Redirecionamento pós-login.
-Qualidade:
-- Testes integração: criar cliente, duplicidade email.
-- Logging básico (id correlação).
-Resultado: Gestão inicial de clientes funcionando (ainda com estágio placeholder / default).
-
-### Sprint 3 (Pipeline / Stages + Segurança Base)
-Stories: 5 (detalhe cliente incluindo estágio), 6 (atualizar estágio), 10 (logout), 13 (completar roles).  
-Backend:
-- Entidade Step (nome, ordem).
-- CRUD leve de Steps (restrito admin) ou seed configurável.
-- Endpoint para mudança de stage do cliente (opcional: histórico leve stage_changes).
-Frontend:
-- Página detalhe cliente agora mostrando estágio e permitindo alteração (dropdown / kanban simples).
-- Visual inicial de pipeline (opção A: lista agrupada por stage; opção B: board drag & drop mínimo se couber).
-- Logout explícito (limpeza tokens / sessão).
-Qualidade:
-- Testes de autorização (apenas user autenticado altera estágio; admin gerencia steps).
-- E2E básico (login → criar cliente → mudar stage).
-Resultado: Funil/kanban funcional antes dos interesses; valor operacional adiantado.
-
-### Sprint 4 (Serviços e Interesses)
-Stories: 7 (catálogo serviços), 8 (associar interesses; renumerado para manter backlog original), 5 (detalhe cliente agora inclui interesses também – extensão).  
-Backend:
-- Entidade Service (nome, descrição, ativo).
-- Entidade Interest (clientId, serviceId, createdAt).
-- Endpoints: CRUD Service, add/remove interest, listar interesses do cliente.
-Frontend:
-- Aba ou seção “Interesses” no detalhe do cliente.
-- CRUD simples de Serviços (admin).
-- UI associação (select múltiplo / autocomplete).
-Qualidade:
-- Índice único (clientId, serviceId) para evitar duplicação.
-Resultado: Enriquecimento de dados do pipeline com interesses estratégicos.
-
-### Sprint 5 (Relatórios Iniciais / Dashboard)
-Stories: 15 (pipeline), 16 (interesses).  
-Backend:
-- Endpoints agregados: contagem de clientes por stage, top serviços por interesse.
-Frontend:
-- Dashboard simples (gráficos).
-- Filtro por período (createdAt).
-Resultado: Primeiros insights operacionais.
-
-### Backlog Pós-Sprint 5 (Refinar)
-- Notas (17)
-- Follow-ups/Tarefas (18)
-- Exportações (CSV)
-- Notificações (email/webhook)
-- Roles adicionais (read-only)
-- Tags/Segmentação
-- Melhorias UX / Design System
+[ Acessar Protótipo no Figma](https://www.figma.com/design/T0y1W7rVJpisFfAbKueD99/Projeto-Integrador-2?node-id=0-1&t=v8jAjMGPzYxtSbLJ-1)
 
 ---
 
-## 11.5 Exemplo de Quebra de História (Sprint 2 – “Cadastrar Cliente”)
+##  Fluxos de Uso
 
-História: “Como funcionário quero cadastrar um novo cliente para iniciar acompanhamento.”
+### 1. Autenticação
+```
+Login → Validação → Acesso ao Dashboard
+```
 
-Critérios de Aceitação:
-- Ao salvar cliente válido, aparece na lista imediatamente.
-- E-mail duplicado retorna erro claro.
-- Busca por parte do nome encontra o cliente.
+### 2. Cadastro de Empresa
+```
+Formulário → Validação → Salvar → Listar Empresas
+```
 
-Tarefas Backend:
-- Criar entidade + migration.
-- DTOs (CreateClientRequest, ClientResponse).
-- Service (regra e-mail único).
-- Controller (POST /clients, GET /clients).
-- Teste unitário (validação).
-- Teste integração (criação e duplicidade).
+### 3. Gestão de Pipeline
+```
+Visualizar Kanban → Mover Card → Atualizar Estágio → Salvar
+```
 
-Tarefas Frontend:
-- Form (React Hook Form + Zod).
-- Mutação via React Query + invalidação lista.
-- Lista com busca (debounce 300ms).
-- Toast de sucesso/erro.
-- Teste de componente (render + submit).
-
-Infra/Outros:
-- Seed opcional de clientes fake (dev).
-
-(Observação: Campo stageId pode iniciar null ou default e ser populado na Sprint 3.)
+### 4. Associação de Serviços
+```
+Detalhe da Empresa → Adicionar Serviço → Configurar Contrato → Confirmar
+```
 
 ---
 
-## Nota sobre Impacto da Reordenação
-Benefícios:
-- Usuários obtêm rapidamente visual de avanço (valor gerencial).
-- Decisões sobre quais serviços priorizar podem vir depois com dados iniciais de progressão de clientes.
-Cuidados:
-- No Sprint 3, garantir que detalhe do cliente já tenha estrutura extensível para inserir aba de interesses depois sem refatoração pesada (ex.: tabs / sections modulares).
-- Planejar DTO de ClientDetail prevendo campo interests vazio (para não quebrar front ao adicionar depois).
+##  Perfis de Usuário
 
+### Vendedor
+- Cadastrar e editar empresas
+- Visualizar e atualizar Kanban
+- Adicionar clientes e serviços
+- Visualizar relatórios básicos
+
+### Gestor
+- Todas as permissões do Vendedor
+- Acesso a relatórios avançados
+- Análise de conversão
+- Métricas de performance
+
+### Administrador
+- Todas as permissões do Gestor
+- Gerenciar usuários do sistema
+- Configurar estágios do funil
+- Gerenciar catálogo de serviços
+- Configurações globais do sistema
+
+---
+
+##  Planejamento de Desenvolvimento
+
+### Sprint 0 - Setup (Concluída)
+-  Configuração de repositórios
+-  Ambiente Docker
+-  Estrutura inicial do projeto
+-  Configuração de CI/CD básico
+
+### Sprint 1 - Autenticação e Usuários (Concluída)
+-  Sistema de login/logout
+-  Gestão de usuários
+-  Controle de permissões
+-  Layout autenticado
+
+### Sprint 2 - Cadastro de Empresas (Em Progresso)
+-  CRUD de empresas
+-  Listagem com filtros
+-  Busca avançada
+-  Upload de imagens
+
+### Sprint 3 - Pipeline Kanban (Planejada)
+-  Visualização de estágios
+-  Drag & drop de cards
+-  Atualização de status
+-  Gestão de prioridades
+
+### Sprint 4 - Serviços e Vinculações (Planejada)
+-  Catálogo de serviços
+-  Associação empresa-serviço
+-  Configuração de contratos
+-  Gestão de interesses
+
+### Sprint 5 - Relatórios e Analytics (Planejada)
+-  Dashboard principal
+-  Métricas de conversão
+-  Previsão de fechamento
+-  Exportação de dados
+
+---
+
+## Características de Qualidade
+
+| Característica | Implementação |
+|----------------|---------------|
+| **Usabilidade** | Interface intuitiva, responsiva e acessível |
+| **Confiabilidade** | Validações robustas, tratamento de erros, backups |
+| **Desempenho** | Otimizações de queries, cache, lazy loading |
+| **Segurança** | Autenticação JWT, validação de inputs, controle de acesso |
+| **Manutenibilidade** | Código limpo, documentado, arquitetura em camadas |
+| **Portabilidade** | Multiplataforma (web responsivo) |
+
+---
+
+## Restrições e Limitações
+
+### Tecnológicas
+- Uso exclusivo de tecnologias open source
+- Sem dependência de hardware específico
+- Hospedagem em infraestrutura de baixo custo
+
+### Funcionais (Versão Atual)
+- Sem integração com sistemas externos
+- Sem funcionalidades de automação de marketing
+- Relatórios básicos (expansível em versões futuras)
+
+---
+
+## Cronograma de Entregas
+
+| Marco | Data | Status |
+|-------|------|--------|
+| Início da análise de requisitos | 11/08/2025 | ✅ Concluído |
+| Protótipo de interface | 22/08/2025 | ✅ Concluído |
+| Versão MVP funcional | 03/10/2025 | ✅ Concluído|
+| Testes com usuários | 07/11/2025 | ✅ Concluído |
+| Entrega final | 12/12/2025 | ✅ Concluído |
+
+---
+
+##  Como Contribuir
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+### Padrões de Código
+- Seguir convenções de nomenclatura do TypeScript/C#
+- Utilizar ESLint e Prettier no frontend
+- Utilizar analyzers do .NET no backend
+- Documentar funções e componentes complexos
+- Escrever testes para novas funcionalidades
+
+---
+
+##  Documentação Adicional
+
+Para informações técnicas detalhadas, consulte a pasta [`docs/`](docs/):
+
+- [Visão Geral](docs/overview.md)
+- [Guia de Instalação](docs/getting-started.md)
+- [Arquitetura do Sistema](docs/architecture.md)
+- [Documentação de Componentes](docs/components.md)
+- [API e Endpoints](docs/api.md)
+- [Configuração de Ambiente](docs/configuration.md)
+- [Guia de Contribuição](docs/contributing.md)
+
+---
+
+##  Licença
+
+Este projeto é de uso interno da **Tantto Tecnologia** e foi desenvolvido como parte do programa de formação técnica da Escola SENAI.
+
+---
+
+##  Contato
+
+Para dúvidas ou sugestões sobre o projeto, entre em contato com a equipe de desenvolvimento ou com o representante da empresa:
+
+**Tantto Tecnologia**  
+Representante: Thiago Martins
+
+---
+
+<p align="center">
+  Desenvolvido com 💙 pela equipe de alunos SENAI
+</p>
